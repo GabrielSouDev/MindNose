@@ -34,9 +34,7 @@
                           
                           Responda estritamente no formato JSON como mostrado acima.
                           Input real: termo: {0} categoria: {1}";
-            Console.WriteLine(prompt);
-            Console.WriteLine(term);
-            Console.WriteLine(category);
+
             var prompMessage = string.Format(prompt, term, category);
             return new Prompt(prompMessage);
         }
