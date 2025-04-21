@@ -16,19 +16,20 @@
                           Tarefa:
                           - Calcule um peso (de 0 a 1) que representa a relevância do termo dentro da categoria.
                           - Gere um resumo explicando o termo no contexto da categoria.
-                          - Identifique até 3 termos relacionados com base nesse resumo.
+                          - Identifique termos com base nesse resumo relacionado a categoria.
                           - Se não encontrar termos relacionados relevantes, retorne apenas os mais próximossemanticamente.
+                          - Para cada termo relacionado, calcule seu peso em relação a categoria (de 0 a 1).
                           - Para cada termo relacionado, calcule seu peso em relação ao termo original (de 0 a 1).
                           
                           Retorne no formato:
                           {{
-                            ""termo"": ""<termo>"",
-                            ""resumo"": ""<explicação do termo dentro da categoria>"",
-                            ""pesoTermoCategoria"": 0.0,
-                            ""termosRelacionados"": [
-                              {{""termo"": ""<termo_relacionado_1>"", ""peso"": 0.0}},
-                              {{""termo"": ""<termo_relacionado_2>"", ""peso"": 0.0}},
-                              {{""termo"": ""<termo_relacionado_3>"", ""peso"": 0.0}}
+                            ""Term"": ""<termo>"",
+                            ""Summary"": ""<explicação do termo dentro da categoria>"",
+                            ""WeigthCategoryToTerm"": 0.0,
+                            ""RelatedTerms"": [
+                              {{""Term"": ""<termo_relacionado_1>"", ""WeigthCategoryToTerm"": 0.0, ""WeigthTermToTerm"": 0.0}},
+                              {{""Term"": ""<termo_relacionado_2>"", ""WeigthCategoryToTerm"": 0.0, ""WeigthTermToTerm"": 0.0}},
+                              {{""Term"": ""<termo_relacionado_3>"", ""WeigthCategoryToTerm"": 0.0, ""WeigthTermToTerm"": 0.0}}
                             ]
                           }}
                           
