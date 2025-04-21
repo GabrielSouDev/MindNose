@@ -1,6 +1,8 @@
-﻿using RelationalGraph.Application.Interfaces;
+﻿using RelationalGraph.Application.DTO;
+using RelationalGraph.Application.Interfaces;
 using RelationalGraph.Application.Interfaces.Clients;
 using RelationalGraph.Application.Interfaces.Services;
+using RelationalGraph.Application.Operations;
 
 namespace RelationalGraph.Application.Services
 {
@@ -11,6 +13,15 @@ namespace RelationalGraph.Application.Services
         public Neo4jService(INeo4jClient neo4jClient)
         {
             _neo4jClient = neo4jClient;
+        }
+
+        public async Task<List<Node>> CreateKnowledgeNode(string response)
+        {
+            var TermObject = IAResponseFormat.ResponseToObject(response);
+            Query query = Query.CreateKnowledgeNode(TermObject);
+
+            var result = await _neo4jClient.WriteToGraphAndReturnNode(query);
+            return result;
         }
     }
 }

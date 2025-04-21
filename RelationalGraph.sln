@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationalGraph.Domain", "RelationalGraph\RelationalGraph.Domain.csproj", "{7BDB23F8-EE7B-41BB-9EAE-E34A1B432174}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationalGraph.Domain", "RelationalGraph.Domain\RelationalGraph.Domain.csproj", "{7BDB23F8-EE7B-41BB-9EAE-E34A1B432174}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationalGraph.Infrastructure", "RelationalGraph.Infrastructure\RelationalGraph.Infrastructure.csproj", "{865CC886-89C1-4330-81D4-A441D3EBC78F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationalGraph.API", "RelationalGraph.API\RelationalGraph.API.csproj", "{AB53A9FE-5AAE-471E-A1AA-F21F604D710E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationalGraph.Application", "RelationalGraph.Application\RelationalGraph.Application.csproj", "{8D8BBBF1-38E4-4233-8AD1-9134C0E4D79C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TesteDeIA", "..\TesteDeIA\TesteDeIA\TesteDeIA.csproj", "{619165E9-C59D-46B7-BFDE-C03225FDB098}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +33,6 @@ Global
 		{8D8BBBF1-38E4-4233-8AD1-9134C0E4D79C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D8BBBF1-38E4-4233-8AD1-9134C0E4D79C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D8BBBF1-38E4-4233-8AD1-9134C0E4D79C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{619165E9-C59D-46B7-BFDE-C03225FDB098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{619165E9-C59D-46B7-BFDE-C03225FDB098}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{619165E9-C59D-46B7-BFDE-C03225FDB098}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{619165E9-C59D-46B7-BFDE-C03225FDB098}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

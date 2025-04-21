@@ -48,7 +48,7 @@ namespace RelationalGraph.Infrastructure.HttpClients
                 {
                 new { role = "user", content = prompt.Message }
             },
-                temperature = 0.7
+                temperature = 0.0
             };
 
             var json = JsonSerializer.Serialize(body);
