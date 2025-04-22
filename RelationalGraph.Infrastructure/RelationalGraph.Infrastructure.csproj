@@ -26,4 +26,8 @@
     <ProjectReference Include="..\RelationalGraph\RelationalGraph.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Storage\" />
+  </ItemGroup>
+
 </Project>

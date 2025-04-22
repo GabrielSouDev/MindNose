@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RelationalGraph.Domain\RelationalGraph.Domain.csproj" />
     <ProjectReference Include="..\RelationalGraph\RelationalGraph.Domain.csproj" />
   </ItemGroup>
 
