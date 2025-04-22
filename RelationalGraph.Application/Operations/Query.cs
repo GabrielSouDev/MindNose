@@ -1,9 +1,4 @@
-﻿using RelationalGraph.Application.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RelationalGraph.Domain.Node;
 
 namespace RelationalGraph.Application.Operations
 {
@@ -16,6 +11,8 @@ namespace RelationalGraph.Application.Operations
         }
         public string CommandLine { get; private set; }
         public object Parameters { get; private set; }
+
+        //TESTAR E CRIAR NOVAS QUERYS - TESTAR MERGE
         public static Query CreateKnowledgeNode(TermResult termResult) =>
             new Query(@"WITH $termResult AS initialTerm
                         CREATE (n:Term { Term: initialTerm.Term, 

@@ -1,4 +1,4 @@
-﻿using RelationalGraph.Application.DTO;
+﻿using RelationalGraph.Domain.Node;
 using RelationalGraph.Application.Operations;
 
 namespace RelationalGraph.Application.Interfaces.Clients;
