@@ -1,29 +1,26 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Neo4j.Driver;
-using RelationalGraph.Application.DTO;
+using RelationalGraph.Domain.Node;
 using RelationalGraph.Application.Interfaces.Clients;
 using System.Diagnostics.CodeAnalysis;
 using Query = RelationalGraph.Application.Operations.Query;
+using RelationalGraph.Domain.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace RelationalGraph.Infrastructure.Persistence;
 public class Neo4jClient : INeo4jClient
 {
     private readonly IDriver _driver;
+    public readonly Neo4jSettings _settings;
 
-    public Neo4jClient(IConfiguration config)
+    public Neo4jClient(IOptions<Neo4jSettings> settings)
     {
-        if (config == null)
-            throw new ArgumentNullException(nameof(config));
+        _settings = settings.Value;
 
-        IConfigurationSection? openRouterConfig = config.GetSection("Neo4j");
-        var uri = openRouterConfig["Url"] ??
-            throw new ArgumentNullException(nameof(config));
-        var user = openRouterConfig["Username"] ??
-            throw new ArgumentNullException(nameof(config));
-        var password = openRouterConfig["Password"] ??
-            throw new ArgumentNullException(nameof(config));
+        if (_settings == null)
+            throw new ArgumentNullException(nameof(_settings));
 
-        _driver = GraphDatabase.Driver(uri, AuthTokens.Basic(user, password));
+        _driver = GraphDatabase.Driver(_settings.Url, AuthTokens.Basic(_settings.Username, _settings.Password));
     }
 
     public void Dispose()

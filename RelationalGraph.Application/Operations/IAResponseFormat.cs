@@ -1,4 +1,4 @@
-﻿using RelationalGraph.Application.DTO;
+﻿using RelationalGraph.Domain.Node;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;

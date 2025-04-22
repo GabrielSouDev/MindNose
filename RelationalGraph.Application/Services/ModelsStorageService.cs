@@ -29,9 +29,8 @@ namespace RelationalGraph.Application.Services
             var Models = JsonSerializer.Deserialize<ModelResponse>(response, options);
 
             var projectRoot = Directory.GetParent(Environment.CurrentDirectory)?.FullName;
-            Console.WriteLine("Project Root: " + projectRoot);
             var path = Path.Combine(projectRoot, "RelationalGraph.Infrastructure", "Storage", "models.json");
-            Console.WriteLine("Path: " + path);
+
             File.WriteAllText(path, JsonSerializer.Serialize(Models, options));
         }
     }

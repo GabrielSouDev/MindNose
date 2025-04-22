@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using RelationalGraph.Application.Interfaces.Clients;
 using RelationalGraph.Application.Operations;
+using RelationalGraph.Domain.Configuration;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -9,34 +11,29 @@ namespace RelationalGraph.Infrastructure.HttpClients
     public class OpenRouterClient : IOpenRouterClient
     {
         private readonly HttpClient _httpClient;
+        public readonly OpenRouterSettings _settings;
 
-        public OpenRouterClient(HttpClient httpClient, IConfigurationSection openRouterConfig)
+        public OpenRouterClient(HttpClient httpClient, IOptions<OpenRouterSettings> settings)
         {
+            _settings = settings.Value;
+
             if (httpClient == null)
                 throw new ArgumentNullException(nameof(httpClient));
 
-            if (openRouterConfig == null)
-                throw new ArgumentNullException(nameof(openRouterConfig));
-
-            string? projectTitle = openRouterConfig["ProjectTitle"];
-            string? apiKey = openRouterConfig["ApiKey"];
-            string? url = openRouterConfig["Url"];
-            string? site = openRouterConfig["Site"];
-
-            if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(url) || string.IsNullOrEmpty(site))
-                throw new ArgumentException(nameof(apiKey), "cannot be null or empty.");
+            if (_settings == null)
+                throw new ArgumentNullException(nameof(_settings), "cannot be null or empty.");
 
             _httpClient = httpClient;
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri(url)
+                BaseAddress = new Uri(_settings.Url)
             };
 
             _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", apiKey);
+                new AuthenticationHeaderValue("Bearer", _settings.ApiKey);
 
-            _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", site);
-            _httpClient.DefaultRequestHeaders.Add("X-Title", projectTitle);
+            _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", _settings.site);
+            _httpClient.DefaultRequestHeaders.Add("X-Title", _settings.ProjectTitle);
         }
 
         public async Task<string> EnviarPrompt(Prompt prompt)
