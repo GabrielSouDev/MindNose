@@ -1,9 +1,8 @@
 ﻿namespace RelationalGraph.Domain.Node;
-
-public class Node
+public class Node<TProperties>
 {
     public long Id { get; set; }
     public string Label { get; set; } = string.Empty;
-    public Dictionary<string, object> Properties { get; set; } = new();
+    public TProperties Properties { get; set; } = default!;
     public long ElementId { get; set; }
 }
