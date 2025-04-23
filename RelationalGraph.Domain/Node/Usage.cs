@@ -1,4 +1,5 @@
 ﻿namespace RelationalGraph.Domain.Node;
+
 public class Usage
 {
     public int prompt_tokens { get; set; }
