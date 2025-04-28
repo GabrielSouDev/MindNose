@@ -1,4 +1,5 @@
-﻿public class Architecture
+﻿namespace RelationalGraph.Domain.LLMModels;
+public class Architecture
 {
     public string Modality { get; set; } = string.Empty;
     public List<string> Input_Modalities { get; set; } = new();
