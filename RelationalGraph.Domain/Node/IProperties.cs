@@ -1,3 +1,3 @@
 ﻿namespace RelationalGraph.Domain.Node;
 
-public interface TProperties { }
+public interface IProperties { }

@@ -1,6 +1,6 @@
 ﻿namespace RelationalGraph.Domain.Node;
 
-public class TermProperties //IF LABEL = TERM, ESSA É A PROP USADA
+public class TermProperties : IProperties
 {
     public string Term { get; set; } = string.Empty;
     public string Summary { get; set; } = string.Empty;
