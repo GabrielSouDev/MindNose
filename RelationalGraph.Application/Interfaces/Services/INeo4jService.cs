@@ -4,6 +4,7 @@ namespace RelationalGraph.Application.Interfaces.Services
 {
     public interface INeo4jService
     {
-        Task<List<Node>> CreateKnowledgeNode(string response);
+        Task<Link> CreateKnowledgeNode(string response);
+        Task<Link> NodeIsExists(string category, string term);
     }
 }
