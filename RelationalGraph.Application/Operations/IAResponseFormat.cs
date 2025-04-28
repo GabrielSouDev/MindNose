@@ -29,13 +29,12 @@ public class IAResponseFormat
         if(termObj is null || usageObj is null)
             throw new ArgumentNullException(nameof(termObj), "Term object or Usage object is null.");
 
-        termObj.Usage ??= new Usage()
+        termObj.Usage = new Usage()
         {
             prompt_tokens = usageObj.prompt_tokens,
             completion_tokens = usageObj.completion_tokens,
             total_tokens = usageObj.total_tokens
         };
-
 
         DEBUG(false, termObj);
 
@@ -45,6 +44,7 @@ public class IAResponseFormat
     {
         if (debugMode)
         {
+            Console.WriteLine($"Category: {termObj.Category}");
             Console.WriteLine($"Termo: {termObj.Term}");
             Console.WriteLine($"Resumo: {termObj.Summary}");
             Console.WriteLine($"Peso do termo na categoria: {termObj.WeigthCategoryToTerm}");
@@ -53,7 +53,6 @@ public class IAResponseFormat
             foreach (var term in termObj.RelatedTerms)
             {
                 Console.WriteLine($"Termo: {term.Term} ");
-                Console.WriteLine($"Peso Category to Term: {term.WeigthCategoryToTerm}");
                 Console.WriteLine($"Peso Term to Term: {term.WeigthTermToTerm}");
                 Console.WriteLine("");
             }
