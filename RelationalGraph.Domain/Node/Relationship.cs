@@ -1,6 +1,6 @@
 ﻿namespace RelationalGraph.Domain.Node;
 
-public class Relationship<IProperties>
+public class Relationship
 {
     public long Id { get; set; } // ID interno do relacionamento
     public string ElementId { get; set; } = string.Empty;   // ID estável do relacionamento
