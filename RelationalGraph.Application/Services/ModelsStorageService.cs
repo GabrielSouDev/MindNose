@@ -1,4 +1,5 @@
 ﻿using RelationalGraph.Application.Interfaces.Services;
+using RelationalGraph.Domain.LLMModels;
 using System.Text.Json;
 namespace RelationalGraph.Application.Services
 {
