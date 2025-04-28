@@ -8,8 +8,8 @@ using RelationalGraph.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouter"));
-builder.Services.Configure<Neo4jSettings>(builder.Configuration.GetSection("Neo4j"));
+builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouterSettings"));
+builder.Services.Configure<Neo4jSettings>(builder.Configuration.GetSection("Neo4jSettings"));
 
 builder.Services.AddSingleton<ModelsStorageService>();
 

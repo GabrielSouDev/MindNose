@@ -13,7 +13,7 @@ namespace RelationalGraph.Application.Services
             _openRouterClient = openRouterClient;
         }
 
-        public async Task<string> SearchFirstLevel(Prompt prompt)
+        public async Task<string> SubmitPrompt(Prompt prompt)
         {
             var result = await _openRouterClient.EnviarPrompt(prompt);
             return result;
