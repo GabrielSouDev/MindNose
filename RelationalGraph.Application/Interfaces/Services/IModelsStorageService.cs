@@ -1,4 +1,6 @@
-﻿namespace RelationalGraph.Application.Interfaces.Services
+﻿using RelationalGraph.Domain.LLMModels;
+
+namespace RelationalGraph.Application.Interfaces.Services
 {
     public interface IModelsStorageService
     {
