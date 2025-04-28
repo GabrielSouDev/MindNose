@@ -1,4 +1,5 @@
-﻿public class Pricing
+﻿namespace RelationalGraph.Domain.LLMModels;
+public class Pricing
 {
     public string Prompt { get; set; } = string.Empty;
     public string Completion { get; set; } = string.Empty;
