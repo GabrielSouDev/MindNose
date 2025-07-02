@@ -5,10 +5,11 @@ namespace RelationalGraph.Application.Services
 {
     public class ModelsStorageService : IModelsStorageService
     {
-        public async Task<ModelResponse> LoadModelsJson()
+        public async Task<ModelResponse?> LoadModelsJson()
         {
-            var projectRoot = Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.Parent?.FullName;
-            var path = Path.Combine(projectRoot, "RelationalGraph.Infrastructure", "Storage", "models.json");
+            var baseDir = AppContext.BaseDirectory;
+            var path = Path.Combine(baseDir, "Storage", "models.json");
+
 
             if (File.Exists(path))
             {
@@ -16,11 +17,11 @@ namespace RelationalGraph.Application.Services
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 return JsonSerializer.Deserialize<ModelResponse>(json, options);
             }
-
-            return null;
+            else
+                return await UpdateModelsJson();
         }
 
-        public async Task UpdateModelsJson()
+        public async Task<ModelResponse?> UpdateModelsJson()
         {
             string response = string.Empty;
             using (var httpClient = new HttpClient())
@@ -29,10 +30,16 @@ namespace RelationalGraph.Application.Services
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var Models = JsonSerializer.Deserialize<ModelResponse>(response, options);
 
-            var projectRoot = Directory.GetParent(Environment.CurrentDirectory)?.FullName;
-            var path = Path.Combine(projectRoot, "RelationalGraph.Infrastructure", "Storage", "models.json");
+            var baseDir = AppContext.BaseDirectory;
+            var basePath = Path.Combine(baseDir, "Storage");
 
+            if (Directory.Exists(basePath))
+                Directory.CreateDirectory(basePath);
+
+            var path = Path.Combine(baseDir, "models.json");
             File.WriteAllText(path, JsonSerializer.Serialize(Models, options));
+
+            return Models;
         }
     }
 }

@@ -24,10 +24,11 @@ namespace RelationalGraph.Application.Services
             Query query = QueryFactory.CreateKnowledgeNode(TermObject);
 
             var result = await _neo4jClient.WriteInGraphAndReturnNode(query);
+
             return result;
         }
 
-        public async Task<Link> NodeIsExists(string category, string term)
+        public async Task<Link?> NodeIsExists(string category, string term)
         {
             Query query = QueryFactory.SearchKnowledgeNode(category, term);
 

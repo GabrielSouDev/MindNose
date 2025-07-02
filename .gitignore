@@ -9,6 +9,7 @@
 
 #Arquivo Json
 **/models.json
+
 # User-specific files
 *.rsuser
 *.suo
