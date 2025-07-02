@@ -6,6 +6,7 @@
 #Secrets
 **/appsettings.Development.json
 **/appsettings.json
+.env
 
 #Arquivo Json
 **/models.json
