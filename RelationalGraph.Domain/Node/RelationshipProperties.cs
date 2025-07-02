@@ -1,6 +1,6 @@
 ﻿namespace RelationalGraph.Domain.Node;
 
-public class RelationshipProperties : IProperties
+public class RelationshipProperties
 {
     public string StartNode { get; set; } = string.Empty;
     public string EndNode { get; set; } = string.Empty;

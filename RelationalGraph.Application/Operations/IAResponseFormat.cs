@@ -36,29 +36,24 @@ public class IAResponseFormat
             total_tokens = usageObj.total_tokens
         };
 
-        DEBUG(false, termObj);
-
         return termObj;
     }
-    private static void DEBUG(bool debugMode, TermResult termObj)
+    private static void DEBUG(TermResult termObj)
     {
-        if (debugMode)
+        Console.WriteLine($"Category: {termObj.Category}");
+        Console.WriteLine($"Termo: {termObj.Term}");
+        Console.WriteLine($"Resumo: {termObj.Summary}");
+        Console.WriteLine($"Peso do termo na categoria: {termObj.WeigthCategoryToTerm}");
+        Console.WriteLine("");
+    
+        foreach (var term in termObj.RelatedTerms)
         {
-            Console.WriteLine($"Category: {termObj.Category}");
-            Console.WriteLine($"Termo: {termObj.Term}");
-            Console.WriteLine($"Resumo: {termObj.Summary}");
-            Console.WriteLine($"Peso do termo na categoria: {termObj.WeigthCategoryToTerm}");
+            Console.WriteLine($"Termo: {term.Term} ");
+            Console.WriteLine($"Peso Term to Term: {term.WeigthTermToTerm}");
             Console.WriteLine("");
-
-            foreach (var term in termObj.RelatedTerms)
-            {
-                Console.WriteLine($"Termo: {term.Term} ");
-                Console.WriteLine($"Peso Term to Term: {term.WeigthTermToTerm}");
-                Console.WriteLine("");
-            }
-            Console.WriteLine($"Prompt Token: {termObj.Usage.prompt_tokens}");
-            Console.WriteLine($"Completion Token: {termObj.Usage.completion_tokens}");
-            Console.WriteLine($"Total Token: {termObj.Usage.total_tokens}");
         }
+        Console.WriteLine($"Prompt Token: {termObj.Usage.prompt_tokens}");
+        Console.WriteLine($"Completion Token: {termObj.Usage.completion_tokens}");
+        Console.WriteLine($"Total Token: {termObj.Usage.total_tokens}");
     }
 }
