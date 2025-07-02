@@ -20,8 +20,33 @@ public class Neo4jClient : INeo4jClient
         if (_settings == null)
             throw new ArgumentNullException(nameof(_settings));
 
-        _driver = GraphDatabase.Driver(_settings.Url, AuthTokens.Basic(_settings.Username, _settings.Password));
+        var url = $"bolt://{_settings.Url}:{_settings.Port}";
+        var token = AuthTokens.Basic(_settings.Username, _settings.Password);
+        _driver = GraphDatabase.Driver(url, token);
+
+        var connected = false;
+        var retryLimit = 15;
+        for (var i = 0; i < retryLimit; i++)
+        {
+            try
+            {
+                var connection = _driver.VerifyAuthenticationAsync(token).GetAwaiter().GetResult();
+
+                Console.WriteLine("Conectado ao Banco de dados Neo4j!");
+                connected = true;
+                break;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{i + 1} - Tentativa de conexão ao Neo4j falha!  Error: {ex.Message}");
+                Thread.Sleep(5000);
+            }
+        }
+
+        if(!connected) 
+            throw new Exception("Não foi possivel conectar ao Banco de dados Neo4j.");
     }
+
 
     public void Dispose()
     {
@@ -38,16 +63,19 @@ public class Neo4jClient : INeo4jClient
             if (!records.Any())
                 return null;
 
+            Node category = GetCategory(records);
+            Relationship crel = GetCategoryRelationship(records);
             Node startNode = GetNode(records);
             List<Node> relatedNodes = GetRelatedNodes(records);
             List<Relationship> rels = GetRelatedNodeRelationship(records);
 
-            List<Node> nodes = new() { startNode };
+            List<Node> nodes = new() { category, startNode };
             nodes.AddRange(relatedNodes);
-            List<Relationship> relationships = new();
+
+            List<Relationship> relationships = new() { crel };
             relationships.AddRange(rels);
 
-            return new Link
+            return new Link()
             {
                 Nodes = nodes,
                 Relationships = relationships
@@ -95,15 +123,15 @@ public class Neo4jClient : INeo4jClient
             var rNode = r["r"].As<INode>();
             var props = rNode.Properties.ToDictionary(p => p.Key, p => p.Value);
 
+
             return new Node
             {
                 Id = rNode.Id,
-                Label = rNode.Labels.FirstOrDefault() ?? "Term",
+                Label = rNode.Labels.FirstOrDefault() ?? "Title",
                 Properties = new TermProperties
                 {
-                    Term = props.TryGetValue("Term", out var termVal) ? termVal.ToString()! : "",
+                    Title = props.TryGetValue("Title", out var TitleVal) ? TitleVal.ToString()! : "",
                     Summary = props.TryGetValue("Summary", out var summaryVal) ? summaryVal.ToString()! : "Ainda não explorado!",
-                    WeigthCategoryToTerm = props.TryGetValue("WeigthCategoryToTerm", out var weightVal) ? Convert.ToDouble(weightVal) : 0,
                     Usage = new Usage
                     {
                         prompt_tokens = props.TryGetValue("prompt_tokens", out var promptTokens) ? Convert.ToInt32(promptTokens) : 0,
@@ -140,13 +168,63 @@ public class Neo4jClient : INeo4jClient
                 Type = rel.Type,
                 Properties = new RelationshipProperties
                 {
-                    WeigthStartToEnd = relProps.TryGetValue("WeigthTermToTerm", out var weight) ? Convert.ToDouble(weight) : 0,
-                    StartNode = nProps.TryGetValue("Term", out var termVal) ? termVal.ToString()! : "",
-                    EndNode = rProps.TryGetValue("Term", out var rTermVal) ? rTermVal.ToString()! : "",
+                    WeigthStartToEnd = relProps.TryGetValue("WeigthStartToEnd", out var weight) ? Convert.ToDouble(weight) : 0,
+                    StartNode = nProps.TryGetValue("Title", out var TitleVal) ? TitleVal.ToString()! : "",
+                    EndNode = rProps.TryGetValue("Title", out var rTitleVal) ? rTitleVal.ToString()! : "",
                     CreatedAt = relProps.TryGetValue("CreatedAt", out var relCreated) ? DateTime.Parse(relCreated.ToString()!) : DateTime.UtcNow
                 }
             };
         }).ToList();
+    }
+
+    private Node GetNode(List<IRecord> records)
+    {
+        return records.Select(r =>
+        {
+            var n = r["n"].As<INode>();
+            var props = n.Properties.ToDictionary(p => p.Key, p => p.Value);
+
+            return new Node
+            {
+                Id = n.Id,
+                Label = n.Labels.FirstOrDefault() ?? "Title",
+                Properties = new TermProperties
+                {
+                    Title = props.TryGetValue("Title", out var TitleVal) ? TitleVal.ToString()! : "",
+                    Summary = props.TryGetValue("Summary", out var summaryVal) ? summaryVal.ToString()! : "Sem resumo",
+                    Usage = new Usage
+                    {
+                        prompt_tokens = props.TryGetValue("prompt_tokens", out var promptTokens) ? Convert.ToInt32(promptTokens) : 0,
+                        completion_tokens = props.TryGetValue("completion_tokens", out var completionTokens) ? Convert.ToInt32(completionTokens) : 0,
+                        total_tokens = props.TryGetValue("total_tokens", out var totalTokens) ? Convert.ToInt32(totalTokens) : 0
+                    },
+                    CreatedAt = props.TryGetValue("CreatedAt", out var createdAtVal) ? DateTime.Parse(createdAtVal.ToString()!) : DateTime.UtcNow
+                },
+                ElementId = n.ElementId
+            };
+        }).FirstOrDefault()!;
+    }
+
+    private Node GetCategory(List<IRecord> records)
+    {
+        return records.Select(r =>
+        {
+            var c = r["c"].As<INode>();
+            var props = c.Properties.ToDictionary(p => p.Key, p => p.Value);
+
+            return new Node
+            {
+                Id = c.Id,
+                Label = c.Labels.FirstOrDefault()!,
+                Properties = props.ContainsKey("CreatedAt")
+                    ? new CategoryProperties {
+                        Title = props.TryGetValue("Title", out var title) ? title.ToString()! : "",
+                        CreatedAt = DateTime.Parse(props["CreatedAt"].ToString()!)
+                    }
+                    : new CategoryProperties(),
+                ElementId = c.ElementId
+            };
+        }).FirstOrDefault()!;
     }
 
     private Relationship GetCategoryRelationship(List<IRecord> records)
@@ -172,59 +250,11 @@ public class Neo4jClient : INeo4jClient
                 Type = rel.Type,
                 Properties = new RelationshipProperties
                 {
-                    WeigthStartToEnd = relProps.TryGetValue("WeigthCategoryToTerm", out var weight) ? Convert.ToDouble(weight) : 0,
-                    StartNode = cProps.TryGetValue("Category", out var catVal) ? catVal.ToString()! : "",
-                    EndNode = nProps.TryGetValue("Term", out var termVal) ? termVal.ToString()! : "",
+                    WeigthStartToEnd = relProps.TryGetValue("WeigthStartToEnd", out var weight) ? Convert.ToDouble(weight) : 0,
+                    StartNode = cProps.TryGetValue("Title", out var catVal) ? catVal.ToString()! : "",
+                    EndNode = nProps.TryGetValue("Title", out var TermVal) ? TermVal.ToString()! : "",
                     CreatedAt = relProps.TryGetValue("CreatedAt", out var relCreated) ? DateTime.Parse(relCreated.ToString()!) : DateTime.UtcNow
                 }
-            };
-        }).FirstOrDefault()!;
-    }
-
-    private Node GetNode(List<IRecord> records)
-    {
-        return records.Select(r =>
-        {
-            var n = r["n"].As<INode>();
-            var props = n.Properties.ToDictionary(p => p.Key, p => p.Value);
-
-            return new Node
-            {
-                Id = n.Id,
-                Label = n.Labels.FirstOrDefault() ?? "Term",
-                Properties = new TermProperties
-                {
-                    Term = props.TryGetValue("Term", out var termVal) ? termVal.ToString()! : "",
-                    Summary = props.TryGetValue("Summary", out var summaryVal) ? summaryVal.ToString()! : "Sem resumo",
-                    WeigthCategoryToTerm = props.TryGetValue("WeigthCategoryToTerm", out var weightVal) ? Convert.ToDouble(weightVal) : 0,
-                    Usage = new Usage
-                    {
-                        prompt_tokens = props.TryGetValue("prompt_tokens", out var promptTokens) ? Convert.ToInt32(promptTokens) : 0,
-                        completion_tokens = props.TryGetValue("completion_tokens", out var completionTokens) ? Convert.ToInt32(completionTokens) : 0,
-                        total_tokens = props.TryGetValue("total_tokens", out var totalTokens) ? Convert.ToInt32(totalTokens) : 0
-                    },
-                    CreatedAt = props.TryGetValue("CreatedAt", out var createdAtVal) ? DateTime.Parse(createdAtVal.ToString()!) : DateTime.UtcNow
-                },
-                ElementId = n.ElementId
-            };
-        }).FirstOrDefault()!;
-    }
-
-    private Node GetCategory(List<IRecord> records)
-    {
-        return records.Select(r =>
-        {
-            var c = r["c"].As<INode>();
-            var props = c.Properties.ToDictionary(p => p.Key, p => p.Value);
-
-            return new Node
-            {
-                Id = c.Id,
-                Label = c.Labels.FirstOrDefault() ?? "Category",
-                Properties = props.ContainsKey("CreatedAt")
-                    ? new CategoryProperties { CreatedAt = DateTime.Parse(props["CreatedAt"].ToString()!) }
-                    : new CategoryProperties(),
-                ElementId = c.ElementId
             };
         }).FirstOrDefault()!;
     }
