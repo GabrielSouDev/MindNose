@@ -1,4 +1,6 @@
-﻿namespace RelationalGraph.Domain.Node;
+﻿using System.Text.Json.Serialization;
+
+namespace RelationalGraph.Domain.Node;
 
 public class Relationship
 {
@@ -9,5 +11,5 @@ public class Relationship
     public long EndNodeId { get; set; }   // ID interno do nó de destino
     public string EndNodeElementId { get; set; } = string.Empty;    // ID estável do nó de destino
     public string Type { get; set; } = string.Empty;    // Tipo do relacionamento
-    public IProperties Properties { get; set; } = default!;
+    public RelationshipProperties Properties { get; set; } = new();
 }
