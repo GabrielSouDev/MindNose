@@ -4,30 +4,34 @@ using RelationalGraph.Application.Services;
 using RelationalGraph.Domain.Configuration;
 using RelationalGraph.Infrastructure.HttpClients;
 using RelationalGraph.Infrastructure.Persistence;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(8080);
-    options.ListenAnyIP(8081, listenOptions => listenOptions.UseHttps());
-});
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouterSettings"));
 builder.Services.Configure<Neo4jSettings>(neo4j =>
 {
-    neo4j.Url = builder.Configuration["DBHOST"] ?? "localhost";
-    neo4j.Port = int.TryParse(builder.Configuration["DBPORT"], out var port) ? port : 7687;
-    neo4j.Username = builder.Configuration["DBUSER"] ?? "neo4j";
-    neo4j.Password = builder.Configuration["DBPASSWORD"] ?? "senha123";
+    neo4j.Host = builder.Configuration["DBHOST"] ?? 
+        builder.Configuration["Neo4jSettings:Host"] ?? 
+        throw new Exception("Não foi possivel localizar o host do Neo4j.");
+
+    neo4j.Username = builder.Configuration["DBUSER"] ?? 
+        builder.Configuration["Neo4jSettings:Username"] ?? 
+        throw new Exception("Não foi possivel localizar o username do Neo4j.");
+
+    neo4j.Password = builder.Configuration["DBPASSWORD"] ?? 
+        builder.Configuration["Neo4jSettings:Password"] ?? 
+        throw new Exception("Não foi possivel localizar o password do Neo4j.");
 });
 
 builder.Services.AddSingleton<ModelsStorageService>();
 
 builder.Services.AddSingleton<INeo4jClient, Neo4jClient>();
-builder.Services.AddHttpClient<IOpenRouterClient, OpenRouterClient>();
+builder.Services.AddScoped<IOpenRouterClient, OpenRouterClient>();
 
 builder.Services.AddScoped<INeo4jService, Neo4jService>();
 builder.Services.AddScoped<IOpenRouterService, OpenRouterService>();
@@ -52,7 +56,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     scope.ServiceProvider.GetRequiredService<INeo4jClient>();
-    scope.ServiceProvider.GetRequiredService<ModelsStorageService>();
 }
 
 if (app.Environment.IsDevelopment())

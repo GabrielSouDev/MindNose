@@ -45,12 +45,11 @@ namespace RelationalGraph.Application.Operations
                         RETURN n, c, crel, rel, r", new { termResult });
 
         public static Query SearchKnowledgeNode(string category, string initialTerm) =>
-            new Query(@"MATCH(n:Term { Title: $initialTerm })
-                        WITH n
-                        MATCH(c:Category { Title: $category})-[crel:CONTAINS]->(n)
-                        MATCH(n)-[rel:RELATED_TO]->(r) LIMIT 10
-                      
-                        RETURN n, c, crel, rel, r", new { category, initialTerm });
-    }
+            new Query(@"MATCH (c:Category { Title: $category })-[crel:CONTAINS]->(n:Term { Title: $initialTerm })
+                OPTIONAL MATCH (n)-[rel:RELATED_TO]->(r)
+                RETURN n, c, crel, rel, r
+                LIMIT 10", new { category, initialTerm });
 
+
+    }
 }
