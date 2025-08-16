@@ -13,17 +13,13 @@ namespace RelationalGraph.Infrastructure.HttpClients
         private readonly HttpClient _httpClient;
         public readonly OpenRouterSettings _settings;
 
-        public OpenRouterClient(HttpClient httpClient, IOptions<OpenRouterSettings> settings)
+        public OpenRouterClient(IOptions<OpenRouterSettings> settings)
         {
             _settings = settings.Value;
-
-            if (httpClient == null)
-                throw new ArgumentNullException(nameof(httpClient));
 
             if (_settings == null)
                 throw new ArgumentNullException(nameof(_settings), "cannot be null or empty.");
 
-            _httpClient = httpClient;
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri(_settings.Url)

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationalGraph.Application
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RelationalGraph.Tests", "..\RelationalGraph.Tests\RelationalGraph.Tests.csproj", "{BEDDE3CF-012C-4971-8017-8A3C315AF4BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81DDED9D-158B-E303-5F62-77A2896D2A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEDDE3CF-012C-4971-8017-8A3C315AF4BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEDDE3CF-012C-4971-8017-8A3C315AF4BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEDDE3CF-012C-4971-8017-8A3C315AF4BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEDDE3CF-012C-4971-8017-8A3C315AF4BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

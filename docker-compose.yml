@@ -1,42 +1,15 @@
-services:
-    neo4j:
-        image: neo4j:latest
-        container_name: ${DBHOST}
-        networks:
-            - neo4j-net
-        ports:
-            - "${DBHTTPPORT}:7474"
-            - "${DBBOLTPORT}:7687"
-        environment:
-            - NEO4J_AUTH=${DBUSER}/${DBPASSWORD}
-            - NEO4J_server_memory_pagecache_size=512M
-            - NEO4J_server_https_enabled=false
-        volumes:
-            - data:/data
-            - logs:/logs
-                
+services:          
     relationalgraph.api:
-        image: ${DOCKER_REGISTRY-}relationalgraphapi
-        build:
-            context: .
-            dockerfile: RelationalGraph.API/Dockerfile
-        networks: 
-            - neo4j-net
+        image: gabrielsouz/relationalgraph.api
+        restart: unless-stopped
+        container_name: relationalgraph.api
         ports:
             - "${APIHTTPPORT}:8080"
-            - "${APIHTTPSPORT}:8081"
         environment:
             - DBHOST=${DBHOST}
-            - DBPORT=${DBBOLTPORT}
             - DBUSER=${DBUSER}
             - DBPASSWORD=${DBPASSWORD}
-            - ASPNETCORE_URLS=http://0.0.0.0:8080;https://0.0.0.0:8081
-        depends_on:
-            - neo4j
-
-networks:
-      neo4j-net:
-        driver: bridge
+            - ASPNETCORE_URLS=http://0.0.0.0:8080
 
 volumes:
     data:

@@ -20,12 +20,12 @@ public class Neo4jClient : INeo4jClient
         if (_settings == null)
             throw new ArgumentNullException(nameof(_settings));
 
-        var url = $"bolt://{_settings.Url}:{_settings.Port}";
         var token = AuthTokens.Basic(_settings.Username, _settings.Password);
-        _driver = GraphDatabase.Driver(url, token);
+        _driver = GraphDatabase.Driver(_settings.Host, token);
 
         var connected = false;
         var retryLimit = 15;
+        var retrySleepTime = 5000;
         for (var i = 0; i < retryLimit; i++)
         {
             try
@@ -39,7 +39,7 @@ public class Neo4jClient : INeo4jClient
             catch (Exception ex)
             {
                 Console.WriteLine($"{i + 1} - Tentativa de conexão ao Neo4j falha!  Error: {ex.Message}");
-                Thread.Sleep(5000);
+                Thread.Sleep(retrySleepTime);
             }
         }
 
