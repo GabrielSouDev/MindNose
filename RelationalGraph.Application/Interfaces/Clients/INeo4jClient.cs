@@ -1,9 +1,9 @@
-﻿using RelationalGraph.Domain.Node;
-using RelationalGraph.Application.Operations;
+﻿using RelationalGraph.Domain.Nodes;
+using RelationalGraph.Domain.CMDs;
 
 namespace RelationalGraph.Application.Interfaces.Clients;
 public interface INeo4jClient : IDisposable
 {
-    Task<Link> WriteInGraphAndReturnNode(Query query);
-    Task<Link?> SearchInGraphAndReturnNode(Query query);
+    Task<Links> WriteInGraphAndReturnLink(Query query);
+    Task<Links?> SearchAndReturnLink(Query query);
 }

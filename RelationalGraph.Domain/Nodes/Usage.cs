@@ -1,4 +1,4 @@
-﻿namespace RelationalGraph.Domain.Node;
+﻿namespace RelationalGraph.Domain.Nodes;
 
 public class Usage
 {

@@ -1,7 +1,7 @@
 ﻿using RelationalGraph.Application.Interfaces.Clients;
 using RelationalGraph.Application.Interfaces.Services;
 using RelationalGraph.Application.Services;
-using RelationalGraph.Domain.Configuration;
+using RelationalGraph.Domain.Configurations;
 using RelationalGraph.Infrastructure.HttpClients;
 using RelationalGraph.Infrastructure.Persistence;
 using System.Text;
@@ -35,6 +35,8 @@ builder.Services.AddScoped<IOpenRouterClient, OpenRouterClient>();
 
 builder.Services.AddScoped<INeo4jService, Neo4jService>();
 builder.Services.AddScoped<IOpenRouterService, OpenRouterService>();
+
+builder.Services.AddScoped<IRelationalGraphService, RelationalGraphService>();
 
 builder.Services.AddControllers();
 

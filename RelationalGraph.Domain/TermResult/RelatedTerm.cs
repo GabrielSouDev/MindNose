@@ -1,4 +1,4 @@
-﻿namespace RelationalGraph.Domain.Node;
+﻿namespace RelationalGraph.Domain.TermResult;
 public class RelatedTerm
 {
     private string _term = string.Empty;

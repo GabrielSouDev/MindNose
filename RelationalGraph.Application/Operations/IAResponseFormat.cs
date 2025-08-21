@@ -1,12 +1,13 @@
-﻿using RelationalGraph.Domain.Node;
+﻿using RelationalGraph.Domain.Nodes;
+using RelationalGraph.Domain.TermResult;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace RelationalGraph.Application.Operations;
-public class IAResponseFormat
+public static class IAResponseFormat
 {
-    public static TermResult ResponseToObject(string response) //meta-llama/llama-3.3-70b-instruct:free
+    public static TermResult TermResultDeserializer(this string response) //meta-llama/llama-3.3-70b-instruct:free
     {
         var responseJson = JsonDocument.Parse(response);
         var content = responseJson
@@ -20,10 +21,10 @@ public class IAResponseFormat
             .RootElement
             .GetProperty("usage");
 
-        var match = Regex.Match(content, "```(json)?\\s*(.*?)\\s*```", RegexOptions.Singleline);
+        var match = Regex.Match(content!, "```(json)?\\s*(.*?)\\s*```", RegexOptions.Singleline);
         var innerJson = match.Success ? match.Groups[2].Value : content;
 
-        var termObj = JsonSerializer.Deserialize<TermResult>(innerJson);
+        var termObj = JsonSerializer.Deserialize<TermResult>(innerJson!);
         var usageObj = JsonSerializer.Deserialize<Usage>(usage.GetRawText());
 
         if(termObj is null || usageObj is null)
@@ -38,7 +39,7 @@ public class IAResponseFormat
 
         return termObj;
     }
-    private static void DEBUG(TermResult termObj)
+    private static void DEBUG(this TermResult termObj)
     {
         Console.WriteLine($"Category: {termObj.Category}");
         Console.WriteLine($"Termo: {termObj.Term}");

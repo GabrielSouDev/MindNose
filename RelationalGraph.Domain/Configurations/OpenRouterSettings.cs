@@ -1,4 +1,4 @@
-﻿namespace RelationalGraph.Domain.Configuration;
+﻿namespace RelationalGraph.Domain.Configurations;
 
 public class OpenRouterSettings
 {

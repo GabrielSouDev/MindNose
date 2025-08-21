@@ -1,4 +1,4 @@
-﻿namespace RelationalGraph.Domain.Common
+﻿namespace RelationalGraph.Domain.Commons
 {
     public abstract class AuditableEntity
     {
