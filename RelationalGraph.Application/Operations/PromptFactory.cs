@@ -1,4 +1,6 @@
-﻿namespace RelationalGraph.Application.Operations
+﻿using RelationalGraph.Domain.CMDs;
+
+namespace RelationalGraph.Application.Operations
 {
     public static class PromptFactory
     {

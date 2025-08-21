@@ -1,10 +1,9 @@
 ﻿using Neo4j.Driver;
-using RelationalGraph.Domain.Node;
+using RelationalGraph.Domain.Nodes;
 using RelationalGraph.Application.Interfaces.Clients;
-using Query = RelationalGraph.Application.Operations.Query;
-using RelationalGraph.Domain.Configuration;
 using Microsoft.Extensions.Options;
-using System.Security.Cryptography.X509Certificates;
+using RelationalGraph.Domain.Configurations;
+using Query = RelationalGraph.Domain.CMDs.Query;
 
 
 namespace RelationalGraph.Infrastructure.Persistence;
@@ -52,10 +51,10 @@ public class Neo4jClient : INeo4jClient
     {
         _driver?.Dispose();
     }
-    public async Task<Link?> SearchInGraphAndReturnNode(Query query)
+    public async Task<Links?> SearchAndReturnLink(Query query)
     {
         await using var session = _driver.AsyncSession();
-        Link? result = await session.ExecuteWriteAsync(async tx => {
+        Links? result = await session.ExecuteWriteAsync(async tx => {
 
             var cursor = await tx.RunAsync(query.CommandLine, query.Parameters);
             var records = await cursor.ToListAsync();
@@ -75,7 +74,7 @@ public class Neo4jClient : INeo4jClient
             List<Relationship> relationships = new() { crel };
             relationships.AddRange(rels);
 
-            return new Link()
+            return new Links()
             {
                 Nodes = nodes,
                 Relationships = relationships
@@ -83,11 +82,11 @@ public class Neo4jClient : INeo4jClient
         });
         return result;
     }
-    public async Task<Link> WriteInGraphAndReturnNode(Query query)
+    public async Task<Links> WriteInGraphAndReturnLink(Query query)
     {
         await using var session = _driver.AsyncSession();
 
-        Link result = await session.ExecuteWriteAsync(async tx =>
+        Links result = await session.ExecuteWriteAsync(async tx =>
         {
             var cursor = await tx.RunAsync(query.CommandLine, query.Parameters);
             var records = await cursor.ToListAsync();
@@ -107,7 +106,7 @@ public class Neo4jClient : INeo4jClient
             List<Relationship> relationships = new() { crel };
             relationships.AddRange(rels);
 
-            return new Link
+            return new Links
             {
                 Nodes = nodes,
                 Relationships = relationships

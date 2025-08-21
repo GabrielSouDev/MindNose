@@ -1,10 +1,9 @@
-﻿using RelationalGraph.Domain.Node;
-using RelationalGraph.Application.Interfaces;
+﻿using RelationalGraph.Domain.Nodes;
 using RelationalGraph.Application.Interfaces.Clients;
 using RelationalGraph.Application.Interfaces.Services;
 using RelationalGraph.Application.Operations;
-using Microsoft.VisualBasic;
-using System.Data;
+using RelationalGraph.Domain.CMDs;
+using RelationalGraph.Domain.TermResult;
 
 namespace RelationalGraph.Application.Services
 {
@@ -17,22 +16,21 @@ namespace RelationalGraph.Application.Services
             _neo4jClient = neo4jClient;
         }
 
-        public async Task<Link> CreateKnowledgeNode(string response)
+        public async Task<Links> SaveTermResultAndReturnIntoLinks(TermResult TermObject)
         {
-            var TermObject = IAResponseFormat.ResponseToObject(response);
 
             Query query = QueryFactory.CreateKnowledgeNode(TermObject);
 
-            var result = await _neo4jClient.WriteInGraphAndReturnNode(query);
+            var result = await _neo4jClient.WriteInGraphAndReturnLink(query);
 
             return result;
         }
 
-        public async Task<Link?> NodeIsExists(string category, string term)
+        public async Task<Links?> IfNodeExistsReturnLinks(string category, string term)
         {
             Query query = QueryFactory.SearchKnowledgeNode(category, term);
 
-            var result = await _neo4jClient.SearchInGraphAndReturnNode(query);
+            var result = await _neo4jClient.SearchAndReturnLink(query);
 
             return result;
         }

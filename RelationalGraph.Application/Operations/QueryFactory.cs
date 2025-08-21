@@ -1,4 +1,5 @@
-﻿using RelationalGraph.Domain.Node;
+﻿using RelationalGraph.Domain.CMDs;
+using RelationalGraph.Domain.TermResult;
 using System.Collections.Generic;
 
 namespace RelationalGraph.Application.Operations

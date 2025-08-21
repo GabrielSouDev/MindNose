@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace RelationalGraph.Domain.Node;
+namespace RelationalGraph.Domain.Nodes;
 public class Node
 {
     public long Id { get; set; }

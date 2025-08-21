@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using RelationalGraph.Application.Interfaces.Clients;
-using RelationalGraph.Application.Operations;
-using RelationalGraph.Domain.Configuration;
+using RelationalGraph.Domain.CMDs;
+using RelationalGraph.Domain.Configurations;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;

@@ -1,4 +1,4 @@
-﻿using RelationalGraph.Application.Operations;
+﻿using RelationalGraph.Domain.CMDs;
 
 namespace RelationalGraph.Application.Interfaces.Clients;
 public interface IOpenRouterClient

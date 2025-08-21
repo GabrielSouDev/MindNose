@@ -1,4 +1,6 @@
-﻿namespace RelationalGraph.Domain.Node;
+﻿using RelationalGraph.Domain.Nodes;
+
+namespace RelationalGraph.Domain.TermResult;
 public class TermResult
 {
     private string _category = string.Empty;

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace RelationalGraph.Domain.Node
+namespace RelationalGraph.Domain.Nodes
 {
     public class PropertiesConverter : JsonConverter<IProperties>
     {
@@ -16,12 +16,12 @@ namespace RelationalGraph.Domain.Node
                 // Lógica para decidir qual tipo concreto instanciar
                 if (root.TryGetProperty("CreatedAt", out _)) // Se a propriedade "CreatedAt" existir, é um CategoryProperties
                 {
-                    return JsonSerializer.Deserialize<CategoryProperties>(root.GetRawText(), options);
+                    return JsonSerializer.Deserialize<CategoryProperties>(root.GetRawText(), options)!;
                 }
 
                 if (root.TryGetProperty("Term", out _)) // Se a propriedade "Term" existir, é um TermProperties
                 {
-                    return JsonSerializer.Deserialize<TermProperties>(root.GetRawText(), options);
+                    return JsonSerializer.Deserialize<TermProperties>(root.GetRawText(), options)!;
                 }
 
                 throw new JsonException("Tipo de propriedade desconhecido.");

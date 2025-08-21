@@ -3,46 +3,36 @@ using Microsoft.AspNetCore.Mvc;
 using RelationalGraph.Application;
 using RelationalGraph.Application.Interfaces.Services;
 using RelationalGraph.Application.Operations;
-using RelationalGraph.Domain.Node;
+using RelationalGraph.Domain.Exceptions;
+using RelationalGraph.Domain.Nodes;
 
-namespace RelationalGraph.API.Controllers
+namespace RelationalGraph.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class RelationalGraphCoreController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RelationalGraphCoreController : ControllerBase
+
+    private readonly IRelationalGraphService _relationalGraphService;
+
+    public RelationalGraphCoreController(IRelationalGraphService relationalGraphService)
     {
-        private readonly IOpenRouterService _openRouterService;
-        private readonly INeo4jService _neo4jService;
+        _relationalGraphService = relationalGraphService;
+    }
 
-        public RelationalGraphCoreController(IOpenRouterService openRouterService, INeo4jService neo4jService)
+    [HttpPost("Post/{category}/{term}")]
+    public async Task<IActionResult> ReturnLinks(string category, string term)
+    {
+        category = category.ToPascalCase();
+        term = term.ToPascalCase();
+
+        try
         {
-            _openRouterService = openRouterService;
-            _neo4jService = neo4jService;
+            var link = await _relationalGraphService.CreateOrReturnLinks(category, term);
+            return Ok(link);
         }
-
-        [HttpPost("Post/{category}/{term}")]
-        public async Task<IActionResult> SearchAndCreateKnowledgeNode(string category, string term)
-        {
-            category = WordFormat(category);
-            term = WordFormat(term);
-
-            Link link = await _neo4jService.NodeIsExists(category, term);//resgata node se existir no neo4j
-
-            if (link is not null)
-                return Ok(link);
-
-            Prompt prompt = PromptFactory.NewKnowledgeNode(category, term); //prepara prompt para IA
-            string response = await _openRouterService.SubmitPrompt(prompt); //chama IA
-
-            link = await _neo4jService.CreateKnowledgeNode(response); //cria nó no neo4j
-            if (link is not null)
-                return Ok(link);
-
+        catch (LinkNotFoundOrCreatedException) { 
             return NotFound("Node not found");
-        }
-        private string WordFormat(string word)
-        {
-            return char.ToUpper(word[0]) + word.Substring(1).ToLower();
         }
     }
 }
