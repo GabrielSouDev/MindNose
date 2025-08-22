@@ -1,8 +1,8 @@
 services:          
     relationalgraph.api:
-        image: gabrielsouz/relationalgraph.api
+        image: gabrielsouz/MindNose
         restart: unless-stopped
-        container_name: relationalgraph.api
+        container_name: MindNose
         ports:
             - "${APIHTTPPORT}:8080"
         environment:
