@@ -1,38 +1,52 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MindNose.Domain;
-using MindNose.Domain.Interfaces.Services;
-using MindNose.Domain.Operations;
 using MindNose.Domain.Exceptions;
 using MindNose.Domain.Nodes;
+using MindNose.Domain.Interfaces.UseCases;
+using MindNose.Domain.Request;
+using MindNose.Application.UseCases;
 
-namespace MindNose.API.Controllers;
+namespace MindNose.Apresentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RelationalGraphCoreController : ControllerBase
+public class MindNoseCoreController : ControllerBase
 {
 
-    private readonly IRelationalGraphService _relationalGraphService;
+    private readonly IGetLinks _getLinks;
+    private readonly ICreateOrGetLinksUseCase _createOrGetLinksUseCase;
 
-    public RelationalGraphCoreController(IRelationalGraphService relationalGraphService)
+    public MindNoseCoreController(IGetLinks getLinks, ICreateOrGetLinksUseCase relationalGraphService)
     {
-        _relationalGraphService = relationalGraphService;
+        _getLinks = getLinks;
+        _createOrGetLinksUseCase = relationalGraphService;
     }
 
-    [HttpPost("Post/{category}/{term}")]
-    public async Task<IActionResult> ReturnLinks(string category, string term)
+    [HttpPost("Get")]
+    public async Task<IActionResult> GetLinks(LinksRequest request)
     {
-        category = category.ToPascalCase();
-        term = term.ToPascalCase();
-
         try
         {
-            var link = await _relationalGraphService.CreateOrReturnLinks(category, term);
+            var link = await _getLinks.ExecuteAsync(request);
+            return Ok(link);
+        }
+        catch (LinkNotFoundException)
+        {
+            return NotFound("Node not found!");
+        }
+    }
+
+    [HttpPost("Post")]
+    public async Task<IActionResult> CreateOrGetLinks(LinksRequest request)
+    {
+        try
+        {
+            var link = await _createOrGetLinksUseCase.ExecuteAsync(request);
             return Ok(link);
         }
         catch (LinkNotFoundOrCreatedException) { 
-            return NotFound("Node not found");
+            return NotFound("Node not created!");
         }
     }
 }

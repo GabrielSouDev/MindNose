@@ -1,11 +1,15 @@
-﻿using MindNose.Domain.Request;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace MindNose.Domain.TermResults;
-public class TermResult
+namespace MindNose.Domain.Request;
+
+public class LinksRequest
 {
-    private string _category = string.Empty;
-    private string _term = string.Empty;
+    private string _category {get;set;} = string.Empty;
     public string Category
     {
         get => _category;
@@ -21,6 +25,7 @@ public class TermResult
             }
         }
     }
+    private string _term { get; set; } = string.Empty;
     public string Term
     {
         get => _term;
@@ -36,9 +41,7 @@ public class TermResult
             }
         }
     }
-    public string Summary { get; set; } = string.Empty;
-    public double WeigthCategoryToInitialTerm { get; set; }
-    public List<RelatedTerm> RelatedTerms { get; set; } = new();
-    public Usage Usage { get; set; } = new();
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public int LengthPath { get; set; } = 1;
+    public int Limit { get; set; } = 5;
+    public int Skip { get; set; } = 0;
 }

@@ -1,4 +1,7 @@
-﻿namespace MindNose.Domain.TermResults;
+﻿using MindNose.Domain.Request;
+using System.Text.RegularExpressions;
+
+namespace MindNose.Domain.TermResults;
 public class RelatedTerm
 {
     private string _term = string.Empty;
@@ -7,16 +10,17 @@ public class RelatedTerm
         get => _term;
         set
         {
-            if (!string.IsNullOrEmpty(value))
-            {
-                _term = char.ToUpper(value[0]) + value.Substring(1).ToLower();
-            }
-            else
+            if (string.IsNullOrWhiteSpace(value))
             {
                 _term = string.Empty;
             }
+            else
+            {
+                _term = value.TermNormalize();
+            }
         }
     }
-    public double WeigthTermToTerm { get; set; }
+    public double WeigthCategoryToRelatedTerm { get; set; }
+    public double WeigthInitialTermToRelatedTerm { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -3,6 +3,7 @@ using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.Operations;
 using MindNose.Domain.CMDs;
 using MindNose.Domain.TermResults;
+using MindNose.Domain.Request;
 
 namespace MindNose.Domain.Services
 {
@@ -15,9 +16,10 @@ namespace MindNose.Domain.Services
             _openRouterClient = openRouterClient;
         }
 
-        public async Task<TermResult> CreateTermResult(string category, string term)
+        public async Task<TermResult> CreateTermResult(LinksRequest request)
         {
-            Prompt prompt = PromptFactory.NewKnowledgeNode(category, term);
+            
+            Prompt prompt = PromptFactory.NewKnowledgeNode(request);
 
             var response = await SubmitPrompt(prompt);
 

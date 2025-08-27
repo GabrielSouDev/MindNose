@@ -1,6 +1,6 @@
 ﻿namespace MindNose.Domain.Nodes
 {
-    public interface IProperties
+    public interface IRelationshipProperties
     {
         public DateTime CreatedAt { get; set; }
     }

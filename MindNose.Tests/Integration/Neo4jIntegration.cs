@@ -37,7 +37,7 @@ namespace MindNose.Tests.Integration
         [Fact]
         public void Neo4JConnection()
         {
-            var client = new Neo4jClient(Options);
+            var client = new BoltNeo4jClient(Options);
             Assert.NotNull(client);
         }
     }

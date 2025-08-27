@@ -1,5 +1,4 @@
-﻿using MindNose.Domain.Nodes;
-using MindNose.Domain.TermResults;
+﻿using MindNose.Domain.TermResults;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -37,6 +36,7 @@ public static class IAResponseFormat
             total_tokens = usageObj.total_tokens
         };
 
+        termObj.DEBUG();
         return termObj;
     }
     private static void DEBUG(this TermResult termObj)
@@ -44,13 +44,14 @@ public static class IAResponseFormat
         Console.WriteLine($"Category: {termObj.Category}");
         Console.WriteLine($"Termo: {termObj.Term}");
         Console.WriteLine($"Resumo: {termObj.Summary}");
-        Console.WriteLine($"Peso do termo na categoria: {termObj.WeigthCategoryToTerm}");
+        Console.WriteLine($"Peso de Categoria para Termo Inicial: {termObj.WeigthCategoryToInitialTerm}");
         Console.WriteLine("");
     
         foreach (var term in termObj.RelatedTerms)
         {
             Console.WriteLine($"Termo: {term.Term} ");
-            Console.WriteLine($"Peso Term to Term: {term.WeigthTermToTerm}");
+            Console.WriteLine($"Peso Category para Termo Relacionado: {term.WeigthCategoryToRelatedTerm}");
+            Console.WriteLine($"Peso Termo Inicial para Termo Relacionado: {term.WeigthInitialTermToRelatedTerm}");
             Console.WriteLine("");
         }
         Console.WriteLine($"Prompt Token: {termObj.Usage.prompt_tokens}");

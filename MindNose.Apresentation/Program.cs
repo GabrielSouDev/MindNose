@@ -4,7 +4,8 @@ using MindNose.Domain.Services;
 using MindNose.Domain.Configurations;
 using MindNose.Infrastructure.HttpClients;
 using MindNose.Infrastructure.Persistence;
-using System.Text;
+using MindNose.Application.UseCases;
+using MindNose.Domain.Interfaces.UseCases;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,14 +30,14 @@ builder.Services.Configure<Neo4jSettings>(neo4j =>
 });
 
 builder.Services.AddSingleton<ModelsStorageService>();
+builder.Services.AddSingleton<IBoltNeo4jClient, BoltNeo4jClient>();
 
-builder.Services.AddSingleton<INeo4jClient, Neo4jClient>();
 builder.Services.AddScoped<IOpenRouterClient, OpenRouterClient>();
-
 builder.Services.AddScoped<INeo4jService, Neo4jService>();
 builder.Services.AddScoped<IOpenRouterService, OpenRouterService>();
 
-builder.Services.AddScoped<IRelationalGraphService, RelationalGraphService>();
+builder.Services.AddScoped<IGetLinks, GetLinks>();
+builder.Services.AddScoped<ICreateOrGetLinksUseCase, CreateOrGetLinksUseCase>();
 
 builder.Services.AddControllers();
 
@@ -57,7 +58,8 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    scope.ServiceProvider.GetRequiredService<INeo4jClient>();
+    var boltNeo4jClient = scope.ServiceProvider.GetRequiredService<IBoltNeo4jClient>();
+    await boltNeo4jClient.InitializeAsync();
 }
 
 if (app.Environment.IsDevelopment())

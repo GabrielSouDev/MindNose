@@ -1,4 +1,4 @@
-﻿namespace MindNose.Domain.Nodes;
+﻿namespace MindNose.Domain.TermResults;
 
 public class Usage
 {

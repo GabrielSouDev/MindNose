@@ -1,9 +1,7 @@
 ﻿namespace MindNose.Domain.Nodes;
 
-public class RelationshipProperties
+public class RelationshipProperties : IRelationshipProperties
 {
-    public string StartNode { get; set; } = string.Empty;
-    public string EndNode { get; set; } = string.Empty;
     public double WeigthStartToEnd { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

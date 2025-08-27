@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.CMDs;
 using MindNose.Domain.Configurations;
@@ -27,7 +26,6 @@ namespace MindNose.Infrastructure.HttpClients
 
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", _settings.ApiKey);
-
             _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", _settings.site);
             _httpClient.DefaultRequestHeaders.Add("X-Title", _settings.ProjectTitle);
         }
@@ -36,7 +34,7 @@ namespace MindNose.Infrastructure.HttpClients
         {
             var body = new
             {
-                model = "meta-llama/llama-3.3-70b-instruct:free",
+                model = "mistralai/mistral-7b-instruct-v0.3",
                 messages = new[]
                 {
                 new { role = "user", content = prompt.Message }

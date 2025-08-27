@@ -1,32 +1,30 @@
 ﻿using MindNose.Domain.Interfaces.Services;
-using MindNose.Domain.Operations;
 using MindNose.Domain.Exceptions;
 using MindNose.Domain.Nodes;
+using MindNose.Domain.Interfaces.UseCases;
+using MindNose.Domain.Request;
 
-namespace MindNose.Domain.Services;
+namespace MindNose.Application.UseCases;
 
-public class RelationalGraphService : IRelationalGraphService
+public class CreateOrGetLinksUseCase : ICreateOrGetLinksUseCase
 {
     private readonly IOpenRouterService _openRouterService;
     private readonly INeo4jService _neo4jService;
 
-    public RelationalGraphService(IOpenRouterService openRouterService, INeo4jService neo4jService)
+    public CreateOrGetLinksUseCase(IOpenRouterService openRouterService, INeo4jService neo4jService)
     {
         _openRouterService = openRouterService;
         _neo4jService = neo4jService;
     }
   
-    public async Task<Links> CreateOrReturnLinks(string category, string term)
+    public async Task<Links> ExecuteAsync(LinksRequest request)
     {
-        category = category.ToPascalCase();
-        term = term.ToPascalCase();
-
-        Links? link = await _neo4jService.IfNodeExistsReturnLinks(category, term);
+        Links? link = await _neo4jService.IfNodeExistsReturnLinks(request);
 
         if (link is not null)
             return link;
 
-        var termObj = await _openRouterService.CreateTermResult(category, term);
+        var termObj = await _openRouterService.CreateTermResult(request);
 
         link = await _neo4jService.SaveTermResultAndReturnIntoLinks(termObj); //cria nó no neo4j
         if (link is not null)

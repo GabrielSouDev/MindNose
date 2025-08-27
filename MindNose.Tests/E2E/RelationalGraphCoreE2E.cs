@@ -14,7 +14,7 @@ namespace MindNose.Tests.E2E
             Neo4jIntegration neo4jItntegration = new();
 
             var openRouterClient = new OpenRouterClient(OpenRouterIntegration.Options);
-            var neo4jClient = new Neo4jClient(neo4jItntegration.Options);
+            var neo4jClient = new BoltNeo4jClient(neo4jItntegration.Options);
 
             var openRouterService = new OpenRouterService(openRouterClient);
             var neo4jService = new Neo4jService(neo4jClient);
@@ -22,7 +22,7 @@ namespace MindNose.Tests.E2E
             //_relationalGraphCoreController = new(openRouterService, neo4jService); 
         }
         [Fact]
-        public async Task RelationalGraphCore() 
+        public void /*async Task*/ RelationalGraphCore() 
         {
             //refazer tudo para um httpclient da api
             //var response = await _relationalGraphCoreController.SearchAndCreateKnowledgeNode("Programação", "Javascript");

@@ -5,6 +5,7 @@ using MindNose.Domain.Operations;
 using MindNose.Domain.Configurations;
 using MindNose.Infrastructure.HttpClients;
 using MindNose.Infrastructure.Persistence;
+using MindNose.Domain.Request;
 
 namespace MindNose.Tests.Integration;
 
@@ -40,7 +41,7 @@ public class OpenRouterIntegration
     {
         var httpClient = new OpenRouterClient(Options);
 
-        var prompt = PromptFactory.NewKnowledgeNode(category:"Programação", term:"Javascript");
+        var prompt = PromptFactory.NewKnowledgeNode(new LinksRequest() { Category = "Programação", Term = "Javascript"});
         var response = await httpClient.EnviarPrompt(prompt);
 
         Assert.NotNull(response);
