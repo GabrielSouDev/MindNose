@@ -24,5 +24,21 @@
     <ProjectReference Include="..\MindNose.Domain\MindNose.Domain.csproj" />
     <ProjectReference Include="..\MindNose.Infrastructure\MindNose.Infrastructure.csproj" />
   </ItemGroup>
-	
+
+  <Target Name="CopiarPastasONNX" AfterTargets="Build">
+  	<ItemGroup>
+  	  <Arquivos Include="..\e5-base\**\*.*">
+  	  	<Origem>EmbeddingModels\e5-base</Origem>
+  	  </Arquivos>
+  	  <Arquivos Include="..\all-MiniLM-L6-v2-onnx\**\*.*">
+  	  	<Origem>EmbeddingModels\all-MiniLM-L6-v2-onnx</Origem>
+  	  </Arquivos>
+  	</ItemGroup>
+  
+  	<Copy
+  	  SourceFiles="@(Arquivos)"
+  	  DestinationFiles="@(Arquivos->'$(OutputPath)\%(Origem)\%(RecursiveDir)%(Filename)%(Extension)')"
+  	  SkipUnchangedFiles="true" />
+  </Target>
+
 </Project>

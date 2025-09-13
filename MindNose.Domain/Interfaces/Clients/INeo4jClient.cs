@@ -1,9 +1,11 @@
 ﻿using MindNose.Domain.Nodes;
-using MindNose.Domain.CMDs;
+using MindNose.Domain.Request;
+using MindNose.Domain.Results;
 
 namespace MindNose.Domain.Interfaces.Clients;
 public interface INeo4jClient : IDisposable
 {
-    Task<Links> WriteInGraphAndReturnLink(Query query);
-    Task<Links?> SearchAndReturnLink(Query query);
+    Task InitializeAsync();
+    Task<Links?> CreateAndReturnLinksAsync(TermResult termResult);
+    Task<Links> GetLinksAsync(LinksRequest request);
 }

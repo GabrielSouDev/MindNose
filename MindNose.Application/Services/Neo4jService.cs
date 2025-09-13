@@ -1,9 +1,10 @@
 ﻿using MindNose.Domain.Nodes;
 using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.Interfaces.Services;
-using MindNose.Domain.Operations;
 using MindNose.Domain.CMDs;
-using MindNose.Domain.TermResults;
+using MindNose.Domain.Results;
+using MindNose.Domain.Request;
+using MindNose.Domain.Exceptions;
 
 namespace MindNose.Domain.Services
 {
@@ -16,21 +17,16 @@ namespace MindNose.Domain.Services
             _neo4jClient = neo4jClient;
         }
 
-        public async Task<Links> SaveTermResultAndReturnIntoLinks(TermResult TermObject)
+        public async Task<Links?> SaveTermResultAndReturnLinksAsync(TermResult TermObject)
         {
+            var links = await _neo4jClient.CreateAndReturnLinksAsync(TermObject);
 
-            Query query = QueryFactory.CreateKnowledgeNode(TermObject);
-
-            var result = await _neo4jClient.WriteInGraphAndReturnLink(query);
-
-            return result;
+            return links;
         }
 
-        public async Task<Links?> IfNodeExistsReturnLinks(string category, string term)
+        public async Task<Links?> IfExistsReturnLinksAsync(LinksRequest request)
         {
-            Query query = QueryFactory.SearchKnowledgeNode(category, term);
-
-            var result = await _neo4jClient.SearchAndReturnLink(query);
+            var result = await _neo4jClient.GetLinksAsync(request);
 
             return result;
         }
