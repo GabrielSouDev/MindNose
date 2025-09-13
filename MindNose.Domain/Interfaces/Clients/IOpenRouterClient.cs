@@ -3,5 +3,5 @@
 namespace MindNose.Domain.Interfaces.Clients;
 public interface IOpenRouterClient
 {
-    Task<string> EnviarPrompt(Prompt prompt);
+    Task<string> EnviarPromptAsync(Prompt prompt, string llmModel);
 }

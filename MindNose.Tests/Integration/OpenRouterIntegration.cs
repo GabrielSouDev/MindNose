@@ -5,6 +5,7 @@ using MindNose.Domain.Operations;
 using MindNose.Domain.Configurations;
 using MindNose.Infrastructure.HttpClients;
 using MindNose.Infrastructure.Persistence;
+using MindNose.Domain.Request;
 
 namespace MindNose.Tests.Integration;
 
@@ -36,12 +37,18 @@ public class OpenRouterIntegration
         Options = new OptionsWrapper<OpenRouterSettings>(openRouterSettings);
     }
     [Fact]
-    public async Task HttpClientOpenRouterConnection()
+    public async Task OpenRouterConnectionAsync()
     {
         var httpClient = new OpenRouterClient(Options);
 
-        var prompt = PromptFactory.NewKnowledgeNode(category:"Programação", term:"Javascript");
-        var response = await httpClient.EnviarPrompt(prompt);
+        var request = new LinksRequest()
+        {
+            Category = "Programação",
+            Term = "Javascript"
+        };
+
+        var prompt = PromptFactory.NewTermResult(request);
+        var response = await httpClient.EnviarPromptAsync(prompt, "mistralai/mistral-small-3.1-24b-instruct");
 
         Assert.NotNull(response);
     }

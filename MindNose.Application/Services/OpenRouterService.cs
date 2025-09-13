@@ -2,7 +2,8 @@
 using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.Operations;
 using MindNose.Domain.CMDs;
-using MindNose.Domain.TermResults;
+using MindNose.Domain.Results;
+using MindNose.Domain.Request;
 
 namespace MindNose.Domain.Services
 {
@@ -15,20 +16,21 @@ namespace MindNose.Domain.Services
             _openRouterClient = openRouterClient;
         }
 
-        public async Task<TermResult> CreateTermResult(string category, string term)
+        public async Task<TermResult> CreateTermResultAsync(LinksRequest request)
         {
-            Prompt prompt = PromptFactory.NewKnowledgeNode(category, term);
 
-            var response = await SubmitPrompt(prompt);
+            Prompt prompt = PromptFactory.NewTermResult(request);
 
-            var TermObject = response.TermResultDeserializer();
+            var response = await SubmitPromptAsync(prompt, request.LLMModel);
 
-            return TermObject;
+            var termResult = response.TermResultDeserializer();
+
+            return termResult;
         }
 
-        public async Task<string> SubmitPrompt(Prompt prompt)
+        public async Task<string> SubmitPromptAsync(Prompt prompt, string llmModel)
         {
-            var result = await _openRouterClient.EnviarPrompt(prompt);
+            var result = await _openRouterClient.EnviarPromptAsync(prompt, llmModel);
             return result;
         }
     }

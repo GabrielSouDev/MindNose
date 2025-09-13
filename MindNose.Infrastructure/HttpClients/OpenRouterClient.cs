@@ -32,11 +32,11 @@ namespace MindNose.Infrastructure.HttpClients
             _httpClient.DefaultRequestHeaders.Add("X-Title", _settings.ProjectTitle);
         }
 
-        public async Task<string> EnviarPrompt(Prompt prompt)
+        public async Task<string> EnviarPromptAsync(Prompt prompt, string llmModel)
         {
             var body = new
             {
-                model = "meta-llama/llama-3.3-70b-instruct:free",
+                model = llmModel,
                 messages = new[]
                 {
                 new { role = "user", content = prompt.Message }
@@ -55,7 +55,7 @@ namespace MindNose.Infrastructure.HttpClients
                 var responseString = await response.Content.ReadAsStringAsync();
                 return responseString;
             }
-            catch (HttpRequestException e)
+            catch (Exception e)
             {
                 throw new ApplicationException("Error sending request to OpenRouter API, ", e);
             }
