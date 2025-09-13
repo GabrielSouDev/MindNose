@@ -1,45 +1,56 @@
 ﻿using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.LLMModels;
 using System.Text.Json;
-namespace MindNose.Domain.Services
+namespace MindNose.Domain.Services;
+
+public class ModelsStorageService : IModelsStorageService
 {
-    public class ModelsStorageService : IModelsStorageService
+    private ModelResponse? Models = new();
+    public async Task InitializeAsync()
     {
-        public async Task<ModelResponse?> LoadModelsJson()
-        {
-            var baseDir = AppContext.BaseDirectory;
-            var path = Path.Combine(baseDir, "Storage", "models.json");
+        Models = await LoadModelsJsonAsync();
 
-
-            if (File.Exists(path))
-            {
-                var json = await File.ReadAllTextAsync(path);
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                return JsonSerializer.Deserialize<ModelResponse>(json, options);
-            }
-            else
-                return await UpdateModelsJson();
-        }
-
-        public async Task<ModelResponse?> UpdateModelsJson()
-        {
-            string response = string.Empty;
-            using (var httpClient = new HttpClient())
-                response = await httpClient.GetStringAsync("https://openrouter.ai/api/v1/models");
-
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var Models = JsonSerializer.Deserialize<ModelResponse>(response, options);
-
-            var baseDir = AppContext.BaseDirectory;
-            var basePath = Path.Combine(baseDir, "Storage");
-
-            if (Directory.Exists(basePath))
-                Directory.CreateDirectory(basePath);
-
-            var path = Path.Combine(baseDir, "models.json");
-            File.WriteAllText(path, JsonSerializer.Serialize(Models, options));
-
-            return Models;
-        }
     }
+
+    private async Task<ModelResponse?> LoadModelsJsonAsync()
+    {
+        var baseDir = AppContext.BaseDirectory;
+        var path = Path.Combine(baseDir, "Storage", "models.json");
+
+
+        if (File.Exists(path))
+        {
+            var json = await File.ReadAllTextAsync(path);
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            Console.WriteLine("- Lista de Modelos LLM Carregada!");
+            return JsonSerializer.Deserialize<ModelResponse>(json, options);
+        }
+        else
+            return await UpdateModelsJsonAsync();
+    }
+
+    private async Task<ModelResponse?> UpdateModelsJsonAsync()
+    {
+        string response = string.Empty;
+        using (var httpClient = new HttpClient())
+            response = await httpClient.GetStringAsync("https://openrouter.ai/api/v1/models");
+
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var Models = JsonSerializer.Deserialize<ModelResponse>(response, options);
+
+        var baseDir = AppContext.BaseDirectory;
+        var basePath = Path.Combine(baseDir, "Storage");
+
+        if (!Directory.Exists(basePath))
+            Directory.CreateDirectory(basePath);
+
+        var path = Path.Combine(basePath, "models.json");
+        await File.WriteAllTextAsync(path, JsonSerializer.Serialize(Models, options));
+
+        Console.WriteLine("- Lista de Modelos LLM Atualizada!");
+        return Models;
+    }
+
+    public ModelResponse GetModels() => Models!;
 }

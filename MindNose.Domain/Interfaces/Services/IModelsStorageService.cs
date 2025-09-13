@@ -4,7 +4,7 @@ namespace MindNose.Domain.Interfaces.Services
 {
     public interface IModelsStorageService
     {
-        Task<ModelResponse?> UpdateModelsJson();
-        Task<ModelResponse?> LoadModelsJson();
+        Task InitializeAsync();
+        ModelResponse GetModels();
     }
 }
