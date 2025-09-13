@@ -4,7 +4,12 @@ using MindNose.Domain.Services;
 using MindNose.Domain.Configurations;
 using MindNose.Infrastructure.HttpClients;
 using MindNose.Infrastructure.Persistence;
-using System.Text;
+using MindNose.Application.UseCases;
+using MindNose.Domain.Interfaces.UseCases;
+using MindNose.Domain.Consts;
+
+var embeddingModel = EmbeddingModel.E5_Base;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,15 +33,17 @@ builder.Services.Configure<Neo4jSettings>(neo4j =>
         throw new Exception("Não foi possivel localizar o password do Neo4j.");
 });
 
-builder.Services.AddSingleton<ModelsStorageService>();
-
 builder.Services.AddSingleton<INeo4jClient, Neo4jClient>();
 builder.Services.AddScoped<IOpenRouterClient, OpenRouterClient>();
+builder.Services.AddSingleton<IEmbeddingClient>(e => new EmbeddingClient(embeddingModel));
 
+builder.Services.AddSingleton<IModelsStorageService, ModelsStorageService>();
 builder.Services.AddScoped<INeo4jService, Neo4jService>();
 builder.Services.AddScoped<IOpenRouterService, OpenRouterService>();
+builder.Services.AddScoped<IEmbeddingService, EmbeddingService>();
 
-builder.Services.AddScoped<IRelationalGraphService, RelationalGraphService>();
+builder.Services.AddScoped<IGetLinks, GetLinks>();
+builder.Services.AddScoped<ICreateOrGetLinksUseCase, CreateOrGetLinksUseCase>();
 
 builder.Services.AddControllers();
 
@@ -57,7 +64,19 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    scope.ServiceProvider.GetRequiredService<INeo4jClient>();
+    var embeddingClient = scope.ServiceProvider.GetRequiredService<IEmbeddingClient>();
+    var modelsStorageService = scope.ServiceProvider.GetRequiredService<IModelsStorageService>();
+    var neo4jClient = scope.ServiceProvider.GetRequiredService<INeo4jClient>();
+
+    await Task.WhenAll(
+        embeddingClient.InitializeAsync(),
+        modelsStorageService.InitializeAsync()
+    );
+
+    await neo4jClient.InitializeAsync();
+
+    Console.WriteLine();
+    Console.WriteLine("***** ------ MindNose Iniciado ------ *****");
 }
 
 if (app.Environment.IsDevelopment())

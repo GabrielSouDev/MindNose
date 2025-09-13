@@ -1,13 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MindNose.Application.UseCases;
-using MindNose.Domain;
+﻿using Microsoft.AspNetCore.Mvc;
 using MindNose.Domain.Exceptions;
 using MindNose.Domain.Interfaces.UseCases;
-using MindNose.Domain.Nodes;
 using MindNose.Domain.Request;
-using Neo4j.Driver;
-using System.Diagnostics;
 
 namespace MindNose.Apresentation.Controllers;
 
