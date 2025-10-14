@@ -1,15 +1,18 @@
-﻿using MindNose.Domain.Interfaces.Clients;
-using MindNose.Domain.Interfaces.Services;
-using MindNose.Domain.Services;
+﻿using Microsoft.Extensions.Logging;
+using MindNose.Application.UseCases;
 using MindNose.Domain.Configurations;
+using MindNose.Domain.Consts;
+using MindNose.Domain.Interfaces.Clients;
+using MindNose.Domain.Interfaces.Commons;
+using MindNose.Domain.Interfaces.Services;
+using MindNose.Domain.Interfaces.UseCases;
+using MindNose.Domain.Services;
+using MindNose.Infrastructure.Embedding;
 using MindNose.Infrastructure.HttpClients;
 using MindNose.Infrastructure.Persistence;
-using MindNose.Application.UseCases;
-using MindNose.Domain.Interfaces.UseCases;
-using MindNose.Domain.Consts;
 
 var embeddingModel = EmbeddingModel.E5_Base;
-
+bool isLocalEmbedding = false;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,12 +38,20 @@ builder.Services.Configure<Neo4jSettings>(neo4j =>
 
 builder.Services.AddSingleton<INeo4jClient, Neo4jClient>();
 builder.Services.AddScoped<IOpenRouterClient, OpenRouterClient>();
-builder.Services.AddSingleton<IEmbeddingClient>(e => new EmbeddingClient(embeddingModel));
 
+if(isLocalEmbedding)
+{
+    builder.Services.AddSingleton<IEmbeddingClient>(e => new LocalEmbeddingClient(embeddingModel));
+} 
+else
+{
+    builder.Services.AddSingleton<IEmbeddingClient>(sp=> new OpenAIEmbeddingClient(builder.Configuration["OpenAI:ApiKey"]!));
+}
+
+builder.Services.AddScoped<IEmbeddingService, EmbedingService>();
 builder.Services.AddSingleton<IModelsStorageService, ModelsStorageService>();
 builder.Services.AddScoped<INeo4jService, Neo4jService>();
 builder.Services.AddScoped<IOpenRouterService, OpenRouterService>();
-builder.Services.AddScoped<IEmbeddingService, EmbeddingService>();
 
 builder.Services.AddScoped<IGetLinks, GetLinks>();
 builder.Services.AddScoped<ICreateOrGetLinksUseCase, CreateOrGetLinksUseCase>();
@@ -64,16 +75,20 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var embeddingClient = scope.ServiceProvider.GetRequiredService<IEmbeddingClient>();
     var modelsStorageService = scope.ServiceProvider.GetRequiredService<IModelsStorageService>();
     var neo4jClient = scope.ServiceProvider.GetRequiredService<INeo4jClient>();
 
-    await Task.WhenAll(
-        embeddingClient.InitializeAsync(),
-        modelsStorageService.InitializeAsync()
-    );
+    if(isLocalEmbedding)
+    {
+        var embeddingClient = scope.ServiceProvider.GetRequiredService<IEmbeddingClient>();
+        if(embeddingClient is LocalEmbeddingClient _embeddingClient)
+            await _embeddingClient.InitializeAsync();
+    }
 
-    await neo4jClient.InitializeAsync();
+    await modelsStorageService.InitializeAsync();
+
+    if(neo4jClient is Neo4jClient _neo4jclient)
+        await _neo4jclient.InitializeAsync();
 
     Console.WriteLine();
     Console.WriteLine("***** ------ MindNose Iniciado ------ *****");

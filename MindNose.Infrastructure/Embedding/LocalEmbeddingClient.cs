@@ -2,18 +2,20 @@
 using Microsoft.ML.OnnxRuntime.Tensors;
 using MindNose.Domain.Consts;
 using MindNose.Domain.Interfaces.Clients;
+using MindNose.Domain.Interfaces.Commons;
 using MindNose.Domain.Results;
+using System.ComponentModel.Design;
 using Tokenizers.HuggingFace.Tokenizer;
 
 namespace MindNose.Infrastructure.HttpClients;
 
-public class EmbeddingClient : IEmbeddingClient, IDisposable
+public class LocalEmbeddingClient : IEmbeddingClient, IInitializable, IDisposable
 {
     private readonly Lazy<InferenceSession>? _onnxSessionLazy;
     private readonly Lazy<Tokenizer>? _tokenizerLazy;
     private const int MaximumSequenceLength = 256;
 
-    public EmbeddingClient(string embeddingModel)
+    public LocalEmbeddingClient(string embeddingModel)
     {
         var modelDirectoryPath = Path.Combine(AppContext.BaseDirectory, "EmbeddingModels",embeddingModel);
         var modelPath = Path.Combine(modelDirectoryPath, "model.onnx");
@@ -41,12 +43,8 @@ public class EmbeddingClient : IEmbeddingClient, IDisposable
         return Task.CompletedTask;
     }
 
-    public float[] GetSentenceEmbedding(string sentence)
-    {
-        return GetSentenceEmbeddingsBatch(new string[] { sentence })[0];
-    }
 
-    public float[][] GetSentenceEmbeddingsBatch(string[] sentences)
+    public Task<double[][]> GetSentenceEmbedding(string[] sentences)
     {
         var tokenizer = _tokenizerLazy!.Value;
         var session = _onnxSessionLazy!.Value;
@@ -66,10 +64,10 @@ public class EmbeddingClient : IEmbeddingClient, IDisposable
 
         // Executa inferência
         using var results = session.Run(inputs);
-        float[] rawOutput = results.First().AsEnumerable<float>().ToArray();
+        double[] rawOutput = results.First().AsEnumerable<float>().Select(f => (double)f).ToArray();
 
         // Extrai e normaliza embeddings
-        return ExtractEmbeddings(rawOutput, batchSize);
+        return Task.FromResult(ExtractEmbeddings(rawOutput, batchSize));
     }
 
     private DenseTensor<long> CreateInputTensor(
@@ -96,14 +94,14 @@ public class EmbeddingClient : IEmbeddingClient, IDisposable
         return new DenseTensor<long>(tensor, new[] { batchSize, maxLength });
     }
 
-    private float[][] ExtractEmbeddings(float[] rawOutput, int batchSize)
+    private double[][] ExtractEmbeddings(double[] rawOutput, int batchSize)
     {
         int hiddenSize = rawOutput.Length / batchSize;
-        var embeddings = new float[batchSize][];
+        var embeddings = new double[batchSize][];
 
         for (int i = 0; i < batchSize; i++)
         {
-            var vec = new float[hiddenSize];
+            var vec = new double[hiddenSize];
             Array.Copy(rawOutput, i * hiddenSize, vec, 0, hiddenSize);
 
             // L2 Normalização
@@ -111,7 +109,7 @@ public class EmbeddingClient : IEmbeddingClient, IDisposable
             if (norm > 0)
             {
                 for (int k = 0; k < hiddenSize; k++)
-                    vec[k] /= (float)norm;
+                    vec[k] /= norm;
             }
 
             embeddings[i] = vec;
@@ -121,7 +119,7 @@ public class EmbeddingClient : IEmbeddingClient, IDisposable
     }
 
 
-    public double CosineSimilarity(float[] firstVector, float[] secondVector)
+    public float CosineSimilarity(double[] firstVector, double[] secondVector)
     {
         double dotProductSum = 0.0;
         double firstVectorNormSquared = 0.0;
@@ -134,7 +132,7 @@ public class EmbeddingClient : IEmbeddingClient, IDisposable
             secondVectorNormSquared += secondVector[dimensionIndex] * secondVector[dimensionIndex];
         }
 
-        return dotProductSum / (Math.Sqrt(firstVectorNormSquared) * Math.Sqrt(secondVectorNormSquared));
+        return (float)(dotProductSum / (Math.Sqrt(firstVectorNormSquared) * Math.Sqrt(secondVectorNormSquared)));
     }
 
     private static long[] PadOrTruncate(long[] arr, int maxLength)
@@ -143,5 +141,4 @@ public class EmbeddingClient : IEmbeddingClient, IDisposable
         if (arr.Length == maxLength) return arr;
         return arr.Concat(new long[maxLength - arr.Length]).ToArray();
     }
-
 }
