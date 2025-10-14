@@ -7,9 +7,10 @@ using MindNose.Domain.Results;
 using MindNose.Domain.Request;
 using Query = MindNose.Domain.CMDs.Query;
 using MindNose.Domain.Exceptions;
+using MindNose.Domain.Interfaces.Commons;
 
 namespace MindNose.Infrastructure.Persistence;
-public class Neo4jClient : INeo4jClient
+public class Neo4jClient : INeo4jClient, IInitializable
 {
     private readonly IDriver _client;
     private readonly IAuthToken _token;

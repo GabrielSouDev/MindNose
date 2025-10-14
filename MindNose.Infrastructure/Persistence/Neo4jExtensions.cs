@@ -144,7 +144,7 @@ public static class Neo4jExtensions
     {
         return new RelationshipProperties
         {
-            WeigthStartToEnd = relationshipPropertiesInfo.TryGetValue(RelationshipProperty.WeigthStartToEnd, out var weight)
+            WeightStartToEnd = relationshipPropertiesInfo.TryGetValue(RelationshipProperty.WeightStartToEnd, out var weight)
                                                                           ? Convert.ToDouble(weight)
                                                                           : 0,
             CreatedAt = relationshipPropertiesInfo.TryGetValue(RelationshipProperty.CreatedAt, out var relCreated)

@@ -43,10 +43,10 @@ public static class QueryFactory
             // Relacionamento categoria -> termo principal
             "MERGE (category)-[relationshipContains:CONTAINS]->(term) " +
             "ON CREATE SET " +
-              "relationshipContains.WeigthStartToEnd = initialTerm.CategoryToTermWeigth, " +
+              "relationshipContains.WeightStartToEnd = initialTerm.CategoryToTermWeigth, " +
               "relationshipContains.CreatedAt        = initialTerm.CreatedAt " +
             "ON MATCH SET " +
-              "relationshipContains.WeigthStartToEnd = coalesce(relationshipContains.WeigthStartToEnd, initialTerm.CategoryToTermWeigth), " +
+              "relationshipContains.WeightStartToEnd = coalesce(relationshipContains.WeightStartToEnd, initialTerm.CategoryToTermWeigth), " +
               "relationshipContains.CreatedAt        = coalesce(relationshipContains.CreatedAt, initialTerm.CreatedAt) " +
 
             // Termos relacionados
@@ -61,19 +61,19 @@ public static class QueryFactory
             // Relacionamento termo principal -> termo relacionado
             "MERGE (term)-[relationshipRelated:RELATED_TO]->(relatedTerm) " +
             "ON CREATE SET " +
-              "relationshipRelated.WeigthStartToEnd = relatedTermParam.InitialTermToRelatedTermWeigth, " +
+              "relationshipRelated.WeightStartToEnd = relatedTermParam.InitialTermToRelatedTermWeigth, " +
               "relationshipRelated.CreatedAt        = relatedTermParam.CreatedAt " +
             "ON MATCH SET " +
-              "relationshipRelated.WeigthStartToEnd = coalesce(relationshipRelated.WeigthStartToEnd, relatedTermParam.InitialTermToRelatedTermWeigth), " +
+              "relationshipRelated.WeightStartToEnd = coalesce(relationshipRelated.WeightStartToEnd, relatedTermParam.InitialTermToRelatedTermWeigth), " +
               "relationshipRelated.CreatedAt        = coalesce(relationshipRelated.CreatedAt, relatedTermParam.CreatedAt) " +
 
             // Relacionamento categoria -> termo relacionado
             "MERGE (category)-[relationshipContainsRelated:CONTAINS]->(relatedTerm) " +
             "ON CREATE SET " +
-              "relationshipContainsRelated.WeigthStartToEnd = relatedTermParam.CategoryToRelatedTermWeigth, " +
+              "relationshipContainsRelated.WeightStartToEnd = relatedTermParam.CategoryToRelatedTermWeigth, " +
               "relationshipContainsRelated.CreatedAt        = relatedTermParam.CreatedAt " +
             "ON MATCH SET " +
-              "relationshipContainsRelated.WeigthStartToEnd = coalesce(relationshipContainsRelated.WeigthStartToEnd, relatedTermParam.CategoryToRelatedTermWeigth), " +
+              "relationshipContainsRelated.WeightStartToEnd = coalesce(relationshipContainsRelated.WeightStartToEnd, relatedTermParam.CategoryToRelatedTermWeigth), " +
               "relationshipContainsRelated.CreatedAt        = coalesce(relationshipContainsRelated.CreatedAt, relatedTermParam.CreatedAt) " +
             
            $"RETURN {NodeType.Term}, {NodeType.Category}, {NodeType.RelatedTerm}, " +
@@ -106,7 +106,7 @@ public static class QueryFactory
             "UNWIND CASE WHEN relatedPath IS NULL THEN [] ELSE relationships(relatedPath) END AS relationshipRelated " +
 
             "RETURN term, category, relatedTerm, relationshipContains, relationshipRelated " +
-            "ORDER BY relationshipRelated.WeigthStartToEnd " +
+            "ORDER BY relationshipRelated.WeightStartToEnd " +
            $"SKIP {request.Skip} " +
            $"LIMIT {request.Limit}", new { request });
     }

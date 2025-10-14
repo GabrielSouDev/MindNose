@@ -27,11 +27,8 @@
 
   <Target Name="CopiarPastasONNX" AfterTargets="Build">
   	<ItemGroup>
-  	  <Arquivos Include="..\e5-base\**\*.*">
-  	  	<Origem>EmbeddingModels\e5-base</Origem>
-  	  </Arquivos>
-  	  <Arquivos Include="..\all-MiniLM-L6-v2-onnx\**\*.*">
-  	  	<Origem>EmbeddingModels\all-MiniLM-L6-v2-onnx</Origem>
+  	  <Arquivos Include="..\EmbeddingModels\**\*.*">
+  	  	<Origem>EmbeddingModels\</Origem>
   	  </Arquivos>
   	</ItemGroup>
   
