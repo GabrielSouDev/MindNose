@@ -1,12 +1,33 @@
-﻿namespace MindNose.Domain.LLMModels;
+﻿using System.Text.Json.Serialization;
+
+namespace MindNose.Domain.LLMModels;
 public class Pricing
 {
-    public string Prompt { get; set; } = string.Empty;
-    public string Completion { get; set; } = string.Empty;
-    public string Request { get; set; } = string.Empty;
-    public string Image { get; set; } = string.Empty;
-    public string Web_Search { get; set; } = string.Empty;
-    public string Internal_Reasoning { get; set; } = string.Empty;
-    public string Input_Cache_Read { get; set; } = string.Empty;
-    public string Input_Cache_Write { get; set; } = string.Empty;
+    [JsonPropertyName("prompt")]
+    public string Prompt { get; set; }
+
+    [JsonPropertyName("completion")]
+    public string Completion { get; set; }
+
+    [JsonPropertyName("request")]
+    public string Request { get; set; }
+
+    [JsonPropertyName("image")]
+    public string Image { get; set; }
+
+    [JsonPropertyName("web_search")]
+    public string WebSearch { get; set; }
+
+    [JsonPropertyName("internal_reasoning")]
+    public string InternalReasoning { get; set; }
+
+    [JsonPropertyName("input_cache_read")]
+    public string InputCacheRead { get; set; }
+
+    [JsonPropertyName("input_cache_write")]
+    public string InputCacheWrite { get; set; }
+
+    [JsonPropertyName("audio")]
+    public string Audio { get; set; }
+
 }

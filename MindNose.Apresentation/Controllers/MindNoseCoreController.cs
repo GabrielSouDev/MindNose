@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MindNose.Domain.Exceptions;
+using MindNose.Domain.Extensions;
 using MindNose.Domain.Interfaces.UseCases;
 using MindNose.Domain.Request;
 
@@ -20,21 +21,12 @@ public class MindNoseCoreController : ControllerBase
     }
 
     [HttpPost("GetLink")]
-    public async Task<IActionResult> GetLinksAsync(string category, string term, int lengthPath = 1, int limit = 10,int skip = 0)
+    public async Task<IActionResult> GetLinksAsync([FromBody] LinksRequest request)
     {
-        var request = new LinksRequest()
-        {
-            Category = category,
-            Term = term,
-            LengthPath = lengthPath,
-            Limit = limit,
-            Skip = skip
-        };
-
         try
         {
             var link = await _getLinks.ExecuteAsync(request);
-            return Ok(link);
+            return Ok(link.LinksToDTO());
         }
         catch (LinksNotFoundException)
         {
@@ -43,20 +35,13 @@ public class MindNoseCoreController : ControllerBase
     }
 
     [HttpPost("CreateOrGetLink")]
-    public async Task<IActionResult> CreateOrGetLinksAsync(string category, string term, string llmModel = "mistralai/mistral-small-3.2-24b-instruct")
+    public async Task<IActionResult> CreateOrGetLinksAsync([FromBody] LinksRequest request)
     {
-        var request = new LinksRequest()
-        {
-            Category = category,
-            Term = term,
-            LLMModel = llmModel
-        }; 
-
         try
         {
             var link = await _createOrGetLinksUseCase.ExecuteAsync(request);
 
-            return Ok(link);
+            return Ok(link.LinksToDTO());
         }
         catch (LinksNotCreatedException)
         {

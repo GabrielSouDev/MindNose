@@ -21,7 +21,7 @@ namespace MindNose.Domain.Services
             sentences.Add(termResult.Term);
             sentences.AddRange(termResult.RelatedTerms.Select(rt => rt.Term).ToList());
 
-            var sentenceEmbeddings = await _embeddingClient.GetSentenceEmbedding(sentences.ToArray());
+            var sentenceEmbeddings = await _embeddingClient.GetSentenceEmbeddingAsync(sentences.ToArray());
 
             var similarityCategoryToTerm = _embeddingClient.CosineSimilarity(sentenceEmbeddings[0], sentenceEmbeddings[1]);
             termResult.CategoryToTermWeigth = similarityCategoryToTerm;

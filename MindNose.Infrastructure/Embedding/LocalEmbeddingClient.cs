@@ -44,7 +44,7 @@ public class LocalEmbeddingClient : IEmbeddingClient, IInitializable, IDisposabl
     }
 
 
-    public Task<double[][]> GetSentenceEmbedding(string[] sentences)
+    public Task<double[][]> GetSentenceEmbeddingAsync(string[] sentences)
     {
         var tokenizer = _tokenizerLazy!.Value;
         var session = _onnxSessionLazy!.Value;

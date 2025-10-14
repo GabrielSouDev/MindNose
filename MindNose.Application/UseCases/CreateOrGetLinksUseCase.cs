@@ -1,11 +1,9 @@
-﻿using MethodTimer;
-using MindNose.Domain.Exceptions;
+﻿using MindNose.Domain.Exceptions;
 using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.Interfaces.UseCases;
 using MindNose.Domain.Nodes;
 using MindNose.Domain.Request;
 using MindNose.Domain.Results;
-using System.Diagnostics;
 
 namespace MindNose.Application.UseCases;
 
@@ -35,7 +33,7 @@ public class CreateOrGetLinksUseCase : ICreateOrGetLinksUseCase
         {
             notEmbeddingedTermResult = await _openRouterService.CreateTermResultAsync(request);
 
-            TermResult termResult = _embeddingService.MakeEmbeddingAsync(notEmbeddingedTermResult);
+            TermResult termResult = await _embeddingService.MakeEmbeddingAsync(notEmbeddingedTermResult);
 
             link = await _neo4jService.SaveTermResultAndReturnLinksAsync(termResult);
         }

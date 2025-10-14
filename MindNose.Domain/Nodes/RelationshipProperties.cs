@@ -2,6 +2,6 @@
 
 public class RelationshipProperties : IRelationshipProperties
 {
-    public double WeigthStartToEnd { get; set; }
+    public double WeightStartToEnd { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

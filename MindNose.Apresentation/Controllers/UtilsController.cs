@@ -7,7 +7,7 @@ namespace MindNose.Apresentation.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UtilsController : ControllerBase
+public partial class UtilsController : ControllerBase
 {
     private readonly IModelsStorageService _storageService;
 
@@ -17,6 +17,6 @@ public class UtilsController : ControllerBase
     }
 
     [HttpGet("GetModelsList")]
-    public IEnumerable<object> GetModelsIdList() =>
-        _storageService.GetModels().Data.Select(d => new { Name = d.Name, Id = d.Id }).ToList();
+    public ModelResponse GetModelsIdList() =>
+        _storageService.GetModels();
 }

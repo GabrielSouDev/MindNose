@@ -1,9 +1,10 @@
-﻿using MindNose.Domain.Interfaces.Services;
+﻿using MindNose.Domain.Interfaces.Commons;
+using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.LLMModels;
 using System.Text.Json;
 namespace MindNose.Domain.Services;
 
-public class ModelsStorageService : IModelsStorageService
+public class ModelsStorageService : IModelsStorageService, IInitializable
 {
     private ModelResponse? Models = new();
     public async Task InitializeAsync()
@@ -15,6 +16,7 @@ public class ModelsStorageService : IModelsStorageService
     private async Task<ModelResponse?> LoadModelsJsonAsync()
     {
         var baseDir = AppContext.BaseDirectory;
+        
         var path = Path.Combine(baseDir, "Storage", "models.json");
 
 

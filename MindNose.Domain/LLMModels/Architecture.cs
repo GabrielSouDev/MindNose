@@ -1,9 +1,20 @@
-﻿namespace MindNose.Domain.LLMModels;
+﻿using System.Text.Json.Serialization;
+
+namespace MindNose.Domain.LLMModels;
 public class Architecture
 {
-    public string Modality { get; set; } = string.Empty;
-    public List<string> Input_Modalities { get; set; } = new();
-    public List<string> Output_Modalities { get; set; } = new();
-    public string Tokenizer { get; set; } = string.Empty;
-    public string Instruct_Type { get; set; } = string.Empty;
+    [JsonPropertyName("modality")]
+    public string Modality { get; set; }
+
+    [JsonPropertyName("input_modalities")]
+    public List<string> InputModalities { get; set; }
+
+    [JsonPropertyName("output_modalities")]
+    public List<string> OutputModalities { get; set; }
+
+    [JsonPropertyName("tokenizer")]
+    public string Tokenizer { get; set; }
+
+    [JsonPropertyName("instruct_type")]
+    public object? InstructType { get; set; }
 }

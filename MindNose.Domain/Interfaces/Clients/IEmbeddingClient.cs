@@ -1,6 +1,6 @@
 ﻿namespace MindNose.Domain.Interfaces.Clients;
 public interface IEmbeddingClient
 {
-    Task<double[][]> GetSentenceEmbedding(string[] sentences);
+    Task<double[][]> GetSentenceEmbeddingAsync(string[] sentences);
     float CosineSimilarity(double[] firstVector, double[] secondVector);
 }

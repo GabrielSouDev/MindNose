@@ -1,7 +1,14 @@
-﻿namespace MindNose.Domain.LLMModels;
+﻿using System.Text.Json.Serialization;
+
+namespace MindNose.Domain.LLMModels;
 public class TopProvider
 {
-    public int? Context_Length { get; set; }
-    public int? Max_Completion_Tokens { get; set; }
-    public bool Is_Moderated { get; set; }
+    [JsonPropertyName("context_length")]
+    public int? ContextLength { get; set; }
+
+    [JsonPropertyName("max_completion_tokens")]
+    public object? MaxCompletionTokens { get; set; }
+
+    [JsonPropertyName("is_moderated")]
+    public bool? IsModerated { get; set; }
 }

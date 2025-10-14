@@ -21,7 +21,7 @@ public class OpenAIEmbeddingClient : IEmbeddingClient
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
     }
 
-    public async Task<double[][]> GetSentenceEmbedding(string[] sentenses)
+    public async Task<double[][]> GetSentenceEmbeddingAsync(string[] sentenses)
     {
         var payload = new
         {

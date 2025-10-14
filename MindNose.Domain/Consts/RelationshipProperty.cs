@@ -9,6 +9,6 @@ public static class RelationshipProperty
     public const string EndNodeId = "EndNodeId";
     public const string EndNodeElementId = "EndNodeElementId";
     public const string Type = "Type";
-    public const string WeigthStartToEnd = "WeigthStartToEnd";
+    public const string WeightStartToEnd = "WeightStartToEnd";
     public const string CreatedAt = "CreatedAt";
 }
