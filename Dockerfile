@@ -12,22 +12,22 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["RelationalGraph.API/RelationalGraph.API.csproj", "RelationalGraph.API/"]
-COPY ["RelationalGraph.Application/RelationalGraph.Application.csproj", "RelationalGraph.Application/"]
-COPY ["RelationalGraph.Domain/RelationalGraph.Domain.csproj", "RelationalGraph.Domain/"]
-COPY ["RelationalGraph.Infrastructure/RelationalGraph.Infrastructure.csproj", "RelationalGraph.Infrastructure/"]
-RUN dotnet restore "./RelationalGraph.API/RelationalGraph.API.csproj"
+COPY ["MindNose.Apresentation/MindNose.Apresentation.csproj", "MindNose.Apresentation/"]
+COPY ["MindNose.Application/MindNose.Application.csproj", "MindNose.Application/"]
+COPY ["MindNose.Domain/MindNose.Domain.csproj", "MindNose.Domain/"]
+COPY ["MindNose.Infrastructure/MindNose.Infrastructure.csproj", "MindNose.Infrastructure/"]
+RUN dotnet restore "./MindNose.Apresentation/MindNose.Apresentation.csproj"
 COPY . .
-WORKDIR "/src/RelationalGraph.API"
-RUN dotnet build "./RelationalGraph.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/MindNose.Apresentation"
+RUN dotnet build "./MindNose.Apresentation.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Esta fase é usada para publicar o projeto de serviço a ser copiado para a fase final
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./RelationalGraph.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./MindNose.Apresentation.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Esta fase é usada na produção ou quando executada no VS no modo normal (padrão quando não está usando a configuração de Depuração)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "RelationalGraph.API.dll"]
+ENTRYPOINT ["dotnet", "MindNose.Apresentation.dll"]

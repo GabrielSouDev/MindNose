@@ -1,16 +1,37 @@
-services:          
-    relationalgraph.api:
-        image: gabrielsouz/MindNose
-        restart: unless-stopped
-        container_name: MindNose
-        ports:
-            - "${APIHTTPPORT}:8080"
-        environment:
-            - DBHOST=${DBHOST}
-            - DBUSER=${DBUSER}
-            - DBPASSWORD=${DBPASSWORD}
-            - ASPNETCORE_URLS=http://0.0.0.0:8080
+services:
+  mindnose:
+    image: gabrielsouz/mindnose:latest
+    container_name: mindnose
+    ports:
+      - 5000:8080
+    environment:
+      - DBHOST=${DBHOST}
+      - DBUSER=${DBUSER}
+      - DBPASSWORD=${DBPASSWORD}
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
+    depends_on:
+      - neo4j
+    volumes:
+        - ./EmbeddingModels:/app/EmbeddingModels
+        - ./Storage:/app/Storage
+        
+  neo4j: 
+    image: neo4j:latest
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=${DBUSER}/${DBPASSWORD}
+      - server.memory.pagecache.size=1G
+      - server.memory.heap.initial_size=512m
+      - server.memory.heap.max_size=1G
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_plugins:/plugins
 
 volumes:
-    data:
-    logs:
+  neo4j_data:
+  neo4j_logs:
+  neo4j_plugins:
