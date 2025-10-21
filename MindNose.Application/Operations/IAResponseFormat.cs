@@ -1,15 +1,12 @@
-﻿using MindNose.Domain.Nodes;
-using MindNose.Domain.Request;
-using MindNose.Domain.Results;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using MindNose.Domain.Results;
+using MindNose.Domain.Results.Partial;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace MindNose.Domain.Operations;
-public static class IAResponseFormat
+public static partial class IAResponseFormat
 {
-    public static TermResult TermResultDeserializer(this string response) //meta-llama/llama-3.3-70b-instruct:free
+    public static LinksResult TermResultDeserializer(this string response)
     {
         var responseJson = JsonDocument.Parse(response);
         var content = responseJson
@@ -26,27 +23,26 @@ public static class IAResponseFormat
         var match = Regex.Match(content!, "```(json)?\\s*(.*?)\\s*```", RegexOptions.Singleline);
         var innerJson = match.Success ? match.Groups[2].Value : content;
 
-        var parcialTermResult = JsonSerializer.Deserialize<ParcialTermResult>(innerJson!);
+        var partialTermResult = JsonSerializer.Deserialize<PartialTermResult>(innerJson!);
         var usage = JsonSerializer.Deserialize<Usage>(usageJson.GetRawText());
 
-        if(parcialTermResult is null || usage is null)
-            throw new ArgumentNullException(nameof(TermResult), "TermResult object is null in Deserializer!");
+        if(partialTermResult is null || usage is null)
+            throw new ArgumentNullException(nameof(PartialTermResult), "TermResult object is null in Deserializer!");
 
-        TermResult termResult = new()
+        LinksResult termResult = new()
         {
-            Category = parcialTermResult.Category,
-            Term = parcialTermResult.Term,
-            Summary = parcialTermResult.Summary,
-            CreatedAt = parcialTermResult.CreatedAt,
+            Category = new CategoryResult() { Title = partialTermResult.Category, Summary = partialTermResult.CategorySummary },
+            Term = new TermResult() { Title = partialTermResult.Term, Summary = partialTermResult.TermSummary },
+            CreatedAt = partialTermResult.CreatedAt,
             Usage = usage
         };
 
-        foreach (var relatedTerms in parcialTermResult.RelatedTerms)
+        foreach (var relatedTerms in partialTermResult.RelatedTerms)
         {
-            RelatedTerm rTerm = new()
+            RelatedTermResult rTerm = new()
             {
-                Term = relatedTerms,
-                CreatedAt = parcialTermResult.CreatedAt
+                Title = relatedTerms,
+                CreatedAt = partialTermResult.CreatedAt
             };
             termResult.RelatedTerms.Add(rTerm);
         }
@@ -54,26 +50,92 @@ public static class IAResponseFormat
         return termResult;
     }
 
-    private class ParcialTermResult
+    public static LinksResult CategoryResultDeserializer(this string response)
     {
+        var responseJson = JsonDocument.Parse(response);
+        var content = responseJson
+            .RootElement
+            .GetProperty("choices")[0]
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString();
 
-        public string Category { get; set; } = string.Empty;
-        public string Term { get; set; } = string.Empty;
-        public string Summary { get; set; } = string.Empty;
-        public string[] RelatedTerms { get; set; } = [];
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        var usageJson = responseJson
+            .RootElement
+            .GetProperty("usage");
+
+        var match = Regex.Match(content!, "```(json)?\\s*(.*?)\\s*```", RegexOptions.Singleline);
+        var innerJson = match.Success ? match.Groups[2].Value : content;
+
+        var partialCategoryResult = JsonSerializer.Deserialize<PartialCategoryResult>(innerJson!);
+        var usage = JsonSerializer.Deserialize<Usage>(usageJson.GetRawText());
+
+        if (partialCategoryResult is null || usage is null)
+            throw new ArgumentNullException(nameof(PartialCategoryResult), "CategoryResult object is null in Deserializer!");
+
+        LinksResult linkResult = new()
+        {
+            Category = new CategoryResult() 
+            { 
+                Title = partialCategoryResult.Category, 
+                Summary = partialCategoryResult.Summary 
+            },
+            CreatedAt = partialCategoryResult.CreatedAt,
+            Usage = usage
+        };
+
+        return linkResult;
     }
 
-    private static void DEBUG(this TermResult termObj)
+    public static LinksResult RelatedTermResultDeserializer(this string response, LinksResult linksResult)
     {
-        Console.WriteLine($"Category: {termObj.Category}");
-        Console.WriteLine($"Termo: {termObj.Term}");
-        Console.WriteLine($"Resumo: {termObj.Summary}");
+        var responseJson = JsonDocument.Parse(response);
+        var content = responseJson
+            .RootElement
+            .GetProperty("choices")[0]
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString();
+
+        var usageJson = responseJson
+            .RootElement
+            .GetProperty("usage");
+
+        var match = Regex.Match(content!, "```(json)?\\s*(.*?)\\s*```", RegexOptions.Singleline);
+        var innerJson = match.Success ? match.Groups[2].Value : content;
+
+        var partialTermResult = JsonSerializer.Deserialize<List<PartialRelatedTermResult>>(innerJson!);
+        var usage = JsonSerializer.Deserialize<Usage>(usageJson.GetRawText());
+
+        if (partialTermResult is null || usage is null)
+            throw new ArgumentNullException(nameof(List<PartialRelatedTermResult>), "RelatedTermResult object is null in Deserializer!");
+
+        for (int i = 0; i < linksResult.RelatedTerms.Count; i++)
+        {
+            var selectedTerm = partialTermResult.Where(ptr => ptr.RelatedTerm == linksResult.RelatedTerms[i].Title).First();
+            linksResult.RelatedTerms[i].Summary = selectedTerm.RelatedTermSummary;
+        }
+
+        linksResult.Usage.total_tokens += usage.total_tokens;
+        linksResult.Usage.prompt_tokens += usage.prompt_tokens;
+        linksResult.Usage.completion_tokens += usage.completion_tokens;
+
+        return linksResult;
+    }
+
+    private static void DEBUG(this LinksResult termObj)
+    {
+        Console.WriteLine($"Category: {termObj.Category.Title}");
+        Console.WriteLine($"Resumo: {termObj.Category.Summary}");
+        Console.WriteLine($"Termo: {termObj.Term.Title}");
+        Console.WriteLine($"Resumo: {termObj.Term.Summary}");
         Console.WriteLine("");
     
         foreach (var term in termObj.RelatedTerms)
         {
-            Console.WriteLine($"Termo: {term.Term} ");
+            Console.WriteLine($"Termo: {term.Title} ");
+            Console.WriteLine($"Termo: {term.Summary} ");
+            Console.WriteLine("");
         }
         Console.WriteLine("");
         Console.WriteLine($"Prompt Token: {termObj.Usage.prompt_tokens}");

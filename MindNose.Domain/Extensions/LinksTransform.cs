@@ -11,6 +11,7 @@ public static class LinksTransform
 
         linksDTO.Elements.Nodes = NodesToDTO(links.Nodes);
         linksDTO.Elements.Edges = RelationshipToDTO(links.Relationships);
+        linksDTO.WasCreated = links.WasCreated;
 
         return linksDTO;
     }
@@ -48,6 +49,7 @@ public static class LinksTransform
                  node.Data.Extra = new Dictionary<string, object>()
                 {
                     { "Title", nodeProperties.Title },
+                    { "Summary", nodeProperties.Summary },
                     { "CreatedAt", nodeProperties.CreatedAt }
                 };
              };

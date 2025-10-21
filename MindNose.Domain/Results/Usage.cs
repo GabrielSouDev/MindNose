@@ -1,5 +1,4 @@
 ﻿namespace MindNose.Domain.Results;
-
 public class Usage
 {
     public int prompt_tokens { get; set; }

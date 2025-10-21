@@ -6,5 +6,5 @@ namespace MindNose.Domain.Interfaces.Services;
 
 public interface IEmbeddingService
 {
-    Task<TermResult> MakeEmbeddingAsync(TermResult termResult);
+    Task<LinksResult> MakeEmbeddingAsync(LinksResult termResult);
 }

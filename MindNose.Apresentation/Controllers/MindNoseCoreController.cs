@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MindNose.Domain.Exceptions;
 using MindNose.Domain.Extensions;
-using MindNose.Domain.Interfaces.UseCases;
+using MindNose.Domain.Interfaces.UseCases.MindNoseCore;
 using MindNose.Domain.Request;
 
 namespace MindNose.Apresentation.Controllers;
@@ -12,16 +12,16 @@ public class MindNoseCoreController : ControllerBase
 {
 
     private readonly IGetLinks _getLinks;
-    private readonly ICreateOrGetLinksUseCase _createOrGetLinksUseCase;
+    private readonly IGetOrCreateLinksUseCase _getOrCreateLinksUseCase;
 
-    public MindNoseCoreController(IGetLinks getLinks, ICreateOrGetLinksUseCase relationalGraphService)
+    public MindNoseCoreController(IGetLinks getLinks, IGetOrCreateLinksUseCase relationalGraphService)
     {
         _getLinks = getLinks;
-        _createOrGetLinksUseCase = relationalGraphService;
+        _getOrCreateLinksUseCase = relationalGraphService;
     }
 
-    [HttpPost("GetLink")]
-    public async Task<IActionResult> GetLinksAsync([FromBody] LinksRequest request)
+    [HttpGet("GetLink")]
+    public async Task<IActionResult> GetLinksAsync([FromQuery] LinksRequest request)
     {
         try
         {
@@ -34,12 +34,12 @@ public class MindNoseCoreController : ControllerBase
         }
     }
 
-    [HttpPost("CreateOrGetLink")]
-    public async Task<IActionResult> CreateOrGetLinksAsync([FromBody] LinksRequest request)
+    [HttpPost("GetOrCreateLink")]
+    public async Task<IActionResult> GetOrCreateLinksAsync([FromBody] LinksRequest request)
     {
         try
         {
-            var link = await _createOrGetLinksUseCase.ExecuteAsync(request);
+            var link = await _getOrCreateLinksUseCase.ExecuteAsync(request);
 
             return Ok(link.LinksToDTO());
         }
@@ -47,6 +47,11 @@ public class MindNoseCoreController : ControllerBase
         {
             return NotFound("Node not created!");
         }
+        catch (CategoryNotFoundException)
+        { 
+            return NotFound("Category not found!"); 
+        }
+
     }
 }
 //var response = @"{""id"":""gen-1745213066-fwpTsuO3AOIqFnxVBZqL"",""provider"":""Together"",""model"":""meta-llama/llama-3.3-70binstruct"",""object"":""chat.completion"",""created"":1745213066,""choices""[{""logprobs"":null,""finish_reason"":""stop"",""native_finish_reason"":""stop"",""index"":0,""message"":{""role"":""assistant"",""content"":""```\n{\n \""Term\"": \""crawler\"",\n  \""Summary\"": \""Um crawler, também conhecido como spider ou robô de busca, é um programa de computador que navega pelainternet para indexar e coletar informações de sites e páginas web. No contexto da programação, os crawlers são frequentemente utilizados emdesenvolvimento web para coletar dados, monitorar mudanças em sites e testar a acessibilidade de páginas.\"",\n  \""WeigthCategoryToTerm\"": 0.8,\n \""RelatedTerms\"": [\n    {\n      \""Term\"": \""web scraping\"",\n      \""WeigthCategoryToTerm\"": 0.7,\n      \""WeigthTermToTerm\"": 0.9\n    },\n   {\n      \""Term\"": \""indexação\"",\n      \""WeigthCategoryToTerm\"": 0.6,\n      \""WeigthTermToTerm\"": 0.8\n    },\n    {\n      \""Term\"":\""busca\"",\n      \""WeigthCategoryToTerm\"": 0.5,\n      \""WeigthTermToTerm\"": 0.7\n    }\n  ]\n\n```"",""refusal"":null,""reasoning"":null}}],""usage"":{""prompt_tokens"":379,""completion_tokens"":234,""total_tokens"":613}}";

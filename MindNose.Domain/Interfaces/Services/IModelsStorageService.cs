@@ -1,10 +1,9 @@
 ﻿using MindNose.Domain.LLMModels;
 
-namespace MindNose.Domain.Interfaces.Services
+namespace MindNose.Domain.Interfaces.Services;
+
+public interface IModelsStorageService
 {
-    public interface IModelsStorageService
-    {
-        Task InitializeAsync();
-        ModelResponse GetModels();
-    }
+    Task InitializeAsync();
+    ModelResponse GetModels();
 }

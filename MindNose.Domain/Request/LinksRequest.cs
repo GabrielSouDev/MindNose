@@ -25,6 +25,7 @@ public class LinksRequest
             }
         }
     }
+    private string _categorySummary { get; set; } = string.Empty;
     private string _term { get; set; } = string.Empty;
     public string Term
     {
@@ -41,8 +42,12 @@ public class LinksRequest
             }
         }
     }
-    public string LLMModel { get; set; } = "mistralai/mistral-small-3.2-24b-instruct";
-    public int LengthPath { get; set; } = 1;
-    public int Limit { get; set; } = 10;
-    public int Skip { get; set; } = 0;
+    public string? LLMModel { get; set; } = "mistralai/mistral-small-3.2-24b-instruct";
+    public int? RelatedTermQuantity { get; set; } = 5;
+    public int? LengthPath { get; set; } = 1;
+    public int? Limit { get; set; } = 10;
+    public int? Skip { get; set; } = 0;
+
+    public string GetCategorySummary() => _categorySummary;
+    public string SetCategorySummary(string summary) => _categorySummary = summary;
 }

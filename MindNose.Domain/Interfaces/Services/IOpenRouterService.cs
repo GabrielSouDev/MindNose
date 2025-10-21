@@ -6,7 +6,8 @@ namespace MindNose.Domain.Interfaces.Services
 {
     public interface IOpenRouterService
     {
-        Task<TermResult> CreateTermResultAsync(LinksRequest request);
+        Task<LinksResult> CreateCategoryResult(string category);
+        Task<LinksResult> CreateTermResultAsync(LinksRequest request);
         Task<string> SubmitPromptAsync(Prompt prompt, string llmModel);
     }
 }

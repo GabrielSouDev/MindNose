@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\IGetCategoryList.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -32,10 +36,7 @@
   	  </Arquivos>
   	</ItemGroup>
   
-  	<Copy
-  	  SourceFiles="@(Arquivos)"
-  	  DestinationFiles="@(Arquivos->'$(OutputPath)\%(Origem)\%(RecursiveDir)%(Filename)%(Extension)')"
-  	  SkipUnchangedFiles="true" />
+  	<Copy SourceFiles="@(Arquivos)" DestinationFiles="@(Arquivos->'$(OutputPath)\%(Origem)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

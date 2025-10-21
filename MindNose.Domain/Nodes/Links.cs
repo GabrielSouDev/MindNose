@@ -7,5 +7,6 @@ public class Links
     public List<INode> Nodes { get; set; } = new();
     public List<IRelationship> Relationships { get; set; } = new();
     public Usage Usage { get; set; } = new();
+    public bool WasCreated { get; set; } = false;
 
 }

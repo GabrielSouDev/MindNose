@@ -1,23 +1,21 @@
 ﻿using MindNose.Domain.Request;
-using System.Text.RegularExpressions;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace MindNose.Domain.Results;
-public class RelatedTerm
+public class RelatedTermResult : NodeResult
 {
-    private string _term = string.Empty;
-    public string Term
+    private string _Title = string.Empty;
+    public override string Title
     {
-        get => _term;
+        get => _Title;
         set
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                _term = string.Empty;
+                _Title = string.Empty;
             }
             else
             {
-                _term = value.TermNormalize();
+                _Title = value.TermNormalize();
             }
         }
     }

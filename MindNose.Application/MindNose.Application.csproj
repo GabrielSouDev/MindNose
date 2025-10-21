@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MindNose.Domain\MindNose.Domain.csproj" />
+    <ProjectReference Include="..\MindNose.Infrastructure\MindNose.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,10 @@
-﻿using MindNose.Domain.Interfaces.Clients;
+﻿using MindNose.Domain.CMDs;
+using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.Operations;
-using MindNose.Domain.CMDs;
-using MindNose.Domain.Results;
 using MindNose.Domain.Request;
+using MindNose.Domain.Results;
+using Neo4j.Driver;
 
 namespace MindNose.Domain.Services
 {
@@ -16,19 +17,32 @@ namespace MindNose.Domain.Services
             _openRouterClient = openRouterClient;
         }
 
-        public async Task<TermResult> CreateTermResultAsync(LinksRequest request)
+        public async Task<LinksResult> CreateCategoryResult(string category)
         {
+            var prompt = PromptFactory.NewCategoryResult(category);
 
+            var response = await SubmitPromptAsync(prompt);
+
+            var linksResult = response.CategoryResultDeserializer();
+            return linksResult;
+        }
+
+        public async Task<LinksResult> CreateTermResultAsync(LinksRequest request)
+        {
             Prompt prompt = PromptFactory.NewTermResult(request);
 
             var response = await SubmitPromptAsync(prompt, request.LLMModel);
-
             var termResult = response.TermResultDeserializer();
+
+            prompt = PromptFactory.NewRelatedTermSummaries(termResult);
+
+            response = await SubmitPromptAsync(prompt, request.LLMModel);
+            termResult = response.RelatedTermResultDeserializer(termResult);
 
             return termResult;
         }
 
-        public async Task<string> SubmitPromptAsync(Prompt prompt, string llmModel)
+        public async Task<string> SubmitPromptAsync(Prompt prompt, string llmModel = "mistralai/mistral-small-3.2-24b-instruct")
         {
             var result = await _openRouterClient.EnviarPromptAsync(prompt, llmModel);
             return result;

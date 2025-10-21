@@ -13,13 +13,13 @@ namespace MindNose.Domain.Services
             _embeddingClient = embeddingClient;
         }
 
-        public async Task<TermResult> MakeEmbeddingAsync(TermResult termResult)
+        public async Task<LinksResult> MakeEmbeddingAsync(LinksResult termResult)
         {
             List<string> sentences = new(); 
 
-            sentences.Add(termResult.Category);
-            sentences.Add(termResult.Term);
-            sentences.AddRange(termResult.RelatedTerms.Select(rt => rt.Term).ToList());
+            sentences.Add($"{termResult.Category.Title}: {termResult.Category.Summary}");
+            sentences.Add($"{termResult.Term.Title}: {termResult.Term.Summary}");
+            sentences.AddRange(termResult.RelatedTerms.Select(rt => $"{rt.Title}: {rt.Summary}").ToList());
 
             var sentenceEmbeddings = await _embeddingClient.GetSentenceEmbeddingAsync(sentences.ToArray());
 
@@ -28,7 +28,7 @@ namespace MindNose.Domain.Services
 
             var relatedTermsEmbeddings = sentenceEmbeddings.Skip(2).ToArray();
 
-            var RelatedTermsList = new List<RelatedTerm>();
+            var RelatedTermsList = new List<RelatedTermResult>();
             for (int candidateIndex = 0; candidateIndex < relatedTermsEmbeddings.Length; candidateIndex++)
             {
                 var similarityRelatedTermToCategory =
@@ -43,7 +43,6 @@ namespace MindNose.Domain.Services
 
             termResult.RelatedTerms = termResult.RelatedTerms
                 .OrderByDescending(termScorePair => termScorePair.InitialTermToRelatedTermWeigth)
-                .Take(10)
                 .ToList();
 
             return termResult;

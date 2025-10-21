@@ -95,7 +95,7 @@ public class Neo4jClient : INeo4jClient, IInitializable
 
         return links;
     }
-    public async Task<Links?> CreateAndReturnLinksAsync(TermResult termResult)
+    public async Task<Links?> CreateAndReturnLinksAsync(LinksResult termResult)
     {
         var query = QueryFactory.CreateLinks(termResult);
 
@@ -106,6 +106,49 @@ public class Neo4jClient : INeo4jClient, IInitializable
 
         var links = results.MapToLinks();
         links.Usage = termResult.Usage;
+        links.WasCreated = termResult.WasCreated;
+
+        return links;
+    }
+
+    public async Task<Links?> GetCategories()
+    {
+        Query query = QueryFactory.GetCategories();
+
+        var results = await ExecuteAsync(query);
+
+        if (!results.Any())
+            return null;
+
+        var links = results.MapToLinks();
+
+        return links;
+    }
+
+    public async Task<Links?> GetCategoryNodeAsync(string category)
+    {
+        Query query = QueryFactory.GetCategory(category);
+
+        var results = await ExecuteAsync(query);
+
+        if (!results.Any())
+            return null;
+
+        var links = results.MapToLinks();
+
+        return links;
+    }
+
+    public async Task<Links?> CreateCategoryAndReturnLinks(LinksResult? categoryLinks)
+    {
+        var query = QueryFactory.CreateCategory(categoryLinks);
+
+        var results = await ExecuteAsync(query);
+
+        if (!results.Any())
+            return null;
+
+        var links = results.MapToLinks();
 
         return links;
     }

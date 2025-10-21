@@ -27,6 +27,10 @@ public static class Neo4jExtensions
             results.GetRelationships(RelationshipType.RelationshipRelated)
         );
 
+        links.Relationships.AddRange(
+            results.GetRelationships(RelationshipType.RelationshipContainsRelated)
+        );
+
         return links.RemoveDuplicates();
     }
 
@@ -50,7 +54,9 @@ public static class Neo4jExtensions
 
     private static List<INode> GetNodes(this List<IRecord> recordList, string nodeType)
     {
-        return recordList.Select(record =>
+        return recordList
+            .Where(record => record.ContainsKey(nodeType))
+            .Select(record =>
         {
             var nodeInfo = record[nodeType].As<INodeDriver>();
             var propertiesInfo = nodeInfo.Properties.ToDictionary(p => p.Key, p => p.Value);
@@ -80,15 +86,19 @@ public static class Neo4jExtensions
             ? new CategoryProperties()
             {
                 Title = propertiesInfo.TryGetValue(NodeProperty.Title, out var categoryTitle) ? categoryTitle.ToString()! : "Null",
+                Summary = propertiesInfo.TryGetValue(NodeProperty.Summary, out var categorySummary) ? categorySummary.ToString()! : "Ainda Não Explorado!",
+                PromptTokens = propertiesInfo.TryGetValue(NodeProperty.PromptTokens, out var categoryPromptTokens) ? Convert.ToInt32(categoryPromptTokens) : 0,
+                CompletionTokens = propertiesInfo.TryGetValue(NodeProperty.CompletionTokens, out var categoryCompletionTokens) ? Convert.ToInt32(categoryCompletionTokens) : 0,
+                TotalTokens = propertiesInfo.TryGetValue(NodeProperty.TotalTokens, out var categoryTotalTokens) ? Convert.ToInt32(categoryTotalTokens) : 0,
                 CreatedAt = propertiesInfo.TryGetValue(NodeProperty.CreatedAt, out var categoryCreatedAt) ? DateTime.Parse(categoryCreatedAt.ToString()!) : DateTime.UtcNow
             }
             : new TermProperties()
             {
-                Title = propertiesInfo.TryGetValue(NodeProperty.Title, out var titleTerm) ? titleTerm.ToString()! : "Null",
-                Summary = propertiesInfo.TryGetValue(NodeProperty.Summary, out var summary) ? summary.ToString()! : "Ainda Não Explorado!",
-                PromptTokens = propertiesInfo.TryGetValue(NodeProperty.PromptTokens, out var promptTokens) ? Convert.ToInt32(promptTokens) : 0,
-                CompletionTokens = propertiesInfo.TryGetValue(NodeProperty.CompletionTokens, out var completionTokens) ? Convert.ToInt32(completionTokens) : 0,
-                TotalTokens = propertiesInfo.TryGetValue(NodeProperty.TotalTokens, out var totalTokens) ? Convert.ToInt32(totalTokens) : 0,
+                Title = propertiesInfo.TryGetValue(NodeProperty.Title, out var termTitle) ? termTitle.ToString()! : "Null",
+                Summary = propertiesInfo.TryGetValue(NodeProperty.Summary, out var termSummary) ? termSummary.ToString()! : "Ainda Não Explorado!",
+                PromptTokens = propertiesInfo.TryGetValue(NodeProperty.PromptTokens, out var termPromptTokens) ? Convert.ToInt32(termPromptTokens) : 0,
+                CompletionTokens = propertiesInfo.TryGetValue(NodeProperty.CompletionTokens, out var termCompletionTokens) ? Convert.ToInt32(termCompletionTokens) : 0,
+                TotalTokens = propertiesInfo.TryGetValue(NodeProperty.TotalTokens, out var termTotalTokens) ? Convert.ToInt32(termTotalTokens) : 0,
                 CreatedAt = propertiesInfo.TryGetValue(NodeProperty.CreatedAt, out var termCreatedAt) ? DateTime.Parse(termCreatedAt.ToString()!) : DateTime.UtcNow
             };
     }
@@ -100,6 +110,9 @@ public static class Neo4jExtensions
 
         foreach (var record in recordList)
         {
+            if (!record.ContainsKey(relationshipType))
+                continue;
+
             var relationshipValue = record[relationshipType];
 
             if (relationshipValue is IPath path)

@@ -37,8 +37,6 @@ public class OpenAIEmbeddingClient : IEmbeddingClient
 
         var responseBody = await response.Content.ReadAsStringAsync();
 
-        Console.WriteLine("Resposta da API: " + responseBody);
-
         var embeddingResponse = JsonSerializer.Deserialize<EmbeddingResponse>(responseBody);
 
         var rawEmbeddings = embeddingResponse.Data.Select(d => d.Embedding.ToArray()).ToArray();

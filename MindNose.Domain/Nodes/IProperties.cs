@@ -6,6 +6,11 @@ namespace MindNose.Domain.Nodes
     [JsonDerivedType(typeof(CategoryProperties), typeDiscriminator: "Category")]
     public interface IProperties
     {
+        public string Title { get; set; }
+        public string Summary { get; set; }
+        public int PromptTokens { get; set; }
+        public int CompletionTokens { get; set; }
+        public int TotalTokens { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

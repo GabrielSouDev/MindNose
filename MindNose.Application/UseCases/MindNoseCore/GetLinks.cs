@@ -1,19 +1,17 @@
 ﻿using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.Exceptions;
 using MindNose.Domain.Nodes;
-using MindNose.Domain.Interfaces.UseCases;
 using MindNose.Domain.Request;
+using MindNose.Domain.Interfaces.UseCases.MindNoseCore;
 
-namespace MindNose.Application.UseCases;
+namespace MindNose.Application.UseCases.MindNoseCore;
 
 public class GetLinks : IGetLinks
 {
-    private readonly IOpenRouterService _openRouterService;
     private readonly INeo4jService _neo4jService;
 
-    public GetLinks(IOpenRouterService openRouterService, INeo4jService neo4jService)
+    public GetLinks(INeo4jService neo4jService)
     {
-        _openRouterService = openRouterService;
         _neo4jService = neo4jService;
     }
   

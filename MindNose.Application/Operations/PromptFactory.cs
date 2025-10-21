@@ -1,5 +1,7 @@
 ﻿using MindNose.Domain.CMDs;
 using MindNose.Domain.Request;
+using MindNose.Domain.Results;
+using Neo4j.Driver;
 
 namespace MindNose.Domain.Operations
 {
@@ -8,76 +10,38 @@ namespace MindNose.Domain.Operations
         public static Prompt NewTermResult(LinksRequest request)
         {
             string prompt = $@"
-                Receba dois inputs:
-                - Categoria: o contexto de dominio.
+                Receba tres inputs:
+                - Categoria: contexto de dominio.
+                - Explicação de Categoria: explicação do contexto de dominio.
                 - Termo: uma palavra ou conceito dentro do dominio categoria.
 
                 Tarefa:
                 - Referente ao Termo Inicial:
                       * Em Português do Brasil gere um resumo explicando o Termo no contexto da Categoria.
-                - Determine no minimo 10 Termos relacionados ao resumo gerado anteriormente sem ambiguidades dentro do mesmo dominio.
-
-                Retorne estritamente um único JSON, iniciando com '{{' e terminando com '}}',
-                sem texto adicional fora do JSON.
-                Use exatamente os nomes das chaves mostrados.
+                - Determine no minimo {request.RelatedTermQuantity} Termos relacionados ao resumo gerado anteriormente sem ambiguidades dentro do mesmo dominio.
 
                 Formato esperado:
                 {{
                   ""Category"": ""<categoria>"",
+                  ""CategorySummary"": ""<Explicação de Categoria>"",
                   ""Term"": ""<termo>"",
-                  ""Summary"": ""<explicação do termo dentro da categoria>"",
+                  ""TermSummary"": ""<explicação do termo gerado>"",
                   ""RelatedTerms"": 
                     [
-                        ""<termo relacionado>"",
-                        ""<termo relacionado>""
+                        ""<termo relacionado gerado>"",
+                        ""<termo relacionado gerado>""
                         ...
                     ]
                 }}
 
-                Input real:
-                Categoria: {request.Category}
-                Termo: {request.Term}";
-            return new Prompt(prompt);
-        }
-
-        public static Prompt NewTermResultOld(LinksRequest request)
-        {
-            string prompt = $@"
-                Receba dois inputs:
-                - Categoria: o contexto de dominio.
-                - Termo: uma palavra ou conceito dentro do dominio categoria.
-
-                Tarefa:
-                - Referente ao Termo Inicial:
-                      * Em Português do Brasil gere um resumo explicando o Termo no contexto da Categoria.
-                      * Calcule um peso entre o Termo e a Categoria (de 0.00 a 1.00).
-                - Identifique Termos relacionados e presentes neste Resumo.
-                - Para cada termo relacionado no contexto da Categoria:
-                      * Calcule um peso entre a Categoria (de 0.00 a 1.00).
-                      * Calcule um peso entre o Termo Inicial (de 0.00 a 1.00).
-
-                Retorne estritamente em um único objeto JSON, iniciando com '{{' e terminando com '}}',
-                sem texto adicional fora do JSON.
+                * Retorne estritamente um único JSON, iniciando com '{{' e terminando com '}}',
+                Sem texto adicional fora do JSON,
                 Use exatamente os nomes das chaves mostrados.
-                O campo ""Term"" deve sempre estar presente e conter o termo inicial.
-
-                Formato esperado:
-                {{
-                  ""Category"": ""<categoria>"",
-                  ""Term"": ""<termo>"",
-                  ""Summary"": ""<explicação do termo dentro da categoria>"",
-                  ""WeigthCategoryToInitialTerm"": 0.0,     
-                  ""RelatedTerms"": [
-                    {{""Term"": ""<termo_relacionado_1>"", ""WeigthCategoryToRelatedTerm"": 0.0, ""WeigthInitialTermToRelatedTerm"": 0.0}},
-                    {{""Term"": ""<termo_relacionado_2>"", ""WeigthCategoryToRelatedTerm"": 0.0, ""WeigthInitialTermToRelatedTerm"": 0.0}},
-                    {{""Term"": ""<termo_relacionado_3>"", ""WeigthCategoryToRelatedTerm"": 0.0, ""WeigthInitialTermToRelatedTerm"": 0.0}}
-                  ]
-                }}
 
                 Input real:
-                Categoria: {request.Category}
+                Categoria: {request.Category},
+                Explicação de Categoria: {request.GetCategorySummary()},
                 Termo: {request.Term}";
-
             return new Prompt(prompt);
         }
 
@@ -95,11 +59,57 @@ namespace MindNose.Domain.Operations
                               ""Category"": ""<categoria>"",
                               ""Term"": ""<termo>"",
                               ""Summary"": ""<explicação do termo dentro da categoria>""
-                              ]
                             }}
                           
-                            Responda estritamente no formato JSON como mostrado acima.
+                            * Responda estritamente no formato JSON como mostrado acima.
+
                             Input real: Categoria: {request.Category} Termo: {request.Term}";
+
+            return new Prompt(prompt);
+        }
+
+        internal static Prompt NewCategoryResult(string category)
+        {
+            string prompt = $@"Receba um input:
+                            Categoria;
+                          
+                            Tarefa:
+                            - Gere um resumo explicando a definição de Categoria.
+                          
+                            Retorne no formato:
+                            {{
+                              ""Category"": ""<categoria>"",
+                              ""Summary"": ""<explicação de categoria>""
+                            }}
+                          
+                            * Responda estritamente no formato JSON como mostrado acima.
+
+                            Input real: Categoria: {category}";
+
+            return new Prompt(prompt);
+        }
+
+        public static Prompt NewRelatedTermSummaries(LinksResult linksResult)
+        {
+            var relatedTerms = linksResult.RelatedTerms.Select(rt => rt.Title).ToList();
+
+            var prompt = @"Tarefa:
+                            - Com base no JSON abaixo, gere uma explicação do RelatedTerm e insira no campo RelatedTermSummary.
+                            - Tenha como base o contexto:";
+            prompt += "\n";
+            prompt += $"{linksResult.Category.Title}: {linksResult.Category.Summary}";
+            prompt += "\n\n";
+
+            prompt += "Formato esperado (responda **estritamente** neste formato JSON):\n";
+            prompt += "[\n";
+            foreach (var relatedTerm in relatedTerms)
+            {
+                prompt += $"  {{\n";
+                prompt += $"    \"RelatedTerm\": \"{relatedTerm}\",\n";
+                prompt += $"    \"RelatedTermSummary\": \"<explicação gerada>\"\n";
+                prompt += $"  }},\n";
+            }
+            prompt = prompt.TrimEnd(',', '\n') + "\n]";
 
             return new Prompt(prompt);
         }

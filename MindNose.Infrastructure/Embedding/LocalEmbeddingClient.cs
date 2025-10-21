@@ -1,10 +1,7 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
-using MindNose.Domain.Consts;
 using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.Interfaces.Commons;
-using MindNose.Domain.Results;
-using System.ComponentModel.Design;
 using Tokenizers.HuggingFace.Tokenizer;
 
 namespace MindNose.Infrastructure.HttpClients;
