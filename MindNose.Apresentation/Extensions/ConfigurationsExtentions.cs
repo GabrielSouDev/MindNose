@@ -9,7 +9,26 @@ public static class ConfigurationsExtentions
     {
         builder.Configuration.AddEnvironmentVariables();
 
-        builder.Services.Configure<OpenRouterSettings>(builder.Configuration.GetSection("OpenRouterSettings"));
+        builder.Services.Configure<OpenRouterSettings>(sp =>
+        {
+            sp.ProjectTitle = builder.Configuration["ProjectTitle"] ??
+                              builder.Configuration["OpenRouterSettings:ProjectTitle"] ??
+                              throw new Exception("Não foi possivel localizar Configurar o OpenRouterClient!");
+
+            sp.ApiKey = builder.Configuration["ApiKey"] ??
+                        builder.Configuration["OpenRouterSettings:ApiKey"] ??
+                        throw new Exception("Não foi possivel localizar Configurar o OpenRouterClient!");
+
+            sp.Url =  builder.Configuration["Url"] ??
+                      builder.Configuration["OpenRouterSettings:Url"] ??
+                      throw new Exception("Não foi possivel localizar Configurar o OpenRouterClient!");
+
+            sp.site = builder.Configuration["Site"] ??
+                      builder.Configuration["OpenRouterSettings:Site"] ??
+                      throw new Exception("Não foi possivel localizar Configurar o OpenRouterClient!");
+        });
+
+
         builder.Services.Configure<Neo4jSettings>(neo4j =>
         {
             neo4j.Host = builder.Configuration["DBHOST"] ??

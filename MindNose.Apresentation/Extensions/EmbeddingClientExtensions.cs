@@ -14,7 +14,10 @@ public static class EmbeddingClientExtensions
         }
         else
         {
-            builder.Services.AddSingleton<IEmbeddingClient>(sp => new OpenAIEmbeddingClient(builder.Configuration["OpenAI:ApiKey"]!));
+            builder.Services.AddSingleton<IEmbeddingClient>(sp => 
+                new OpenAIEmbeddingClient(builder.Configuration["OpenAIApiKey"] ?? 
+                                          builder.Configuration["OpenAI:ApiKey"] ?? 
+                                          throw new Exception("Não foi possivel localizar Configurar o OpenAIClient!")));
         }
     }
 }

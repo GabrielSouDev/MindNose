@@ -4,7 +4,11 @@ services:
     container_name: mindnose
     ports:
       - 5000:8080
+    env_file:
+      - .env
     environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_HTTP_PORTS=8080
       - DBHOST=${DBHOST}
       - DBUSER=${DBUSER}
       - DBPASSWORD=${DBPASSWORD}
@@ -14,6 +18,10 @@ services:
     volumes:
         - ./EmbeddingModels:/app/EmbeddingModels
         - ./Storage:/app/Storage
+        - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+        - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+        - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+        - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
         
   neo4j: 
     image: neo4j:latest
