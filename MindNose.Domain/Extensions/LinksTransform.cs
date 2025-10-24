@@ -11,6 +11,7 @@ public static class LinksTransform
 
         linksDTO.Elements.Nodes = NodesToDTO(links.Nodes);
         linksDTO.Elements.Edges = RelationshipToDTO(links.Relationships);
+
         linksDTO.WasCreated = links.WasCreated;
 
         return linksDTO;
@@ -62,6 +63,7 @@ public static class LinksTransform
 
     private static List<EdgeDTO> RelationshipToDTO(this List<IRelationship> relationships)
     {
+        relationships = relationships.OrderByDescending(e => ((RelationshipProperties)e.Properties).WeightStartToEnd).ToList();
         var relationshipsDTO = new List<EdgeDTO>();
 
         relationships.ForEach(r =>
