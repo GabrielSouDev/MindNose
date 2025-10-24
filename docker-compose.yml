@@ -1,7 +1,7 @@
 services:
   mindnose:
     image: gabrielsouz/mindnose:latest
-    container_name: mindnose
+    container_name: mindnose_core
     ports:
       - 5000:8080
     env_file:
