@@ -97,7 +97,9 @@ namespace MindNose.Domain.Operations
                             - Com base no JSON abaixo, gere uma explicação do RelatedTerm e insira no campo RelatedTermSummary.
                             - Tenha como base o contexto:";
             prompt += "\n";
-            prompt += $"{linksResult.Category.Title}: {linksResult.Category.Summary}";
+            prompt += $"{linksResult.Category.Title}: {linksResult.Category.Summary}\n";
+            prompt += "e com o contexto principal:";
+            prompt += $"{linksResult.Term.Title}: {linksResult.Term.Summary}";
             prompt += "\n\n";
 
             prompt += "Formato esperado (responda **estritamente** neste formato JSON):\n";

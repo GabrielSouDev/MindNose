@@ -93,7 +93,9 @@ public static class QueryFactory
            $"OPTIONAL MATCH relatedPath = (term)-[:RELATED_TO*1..{request.LengthPath}]->(relatedTerm) " +
             "UNWIND CASE WHEN relatedPath IS NULL THEN [] ELSE relationships(relatedPath) END AS relationshipRelated " +
 
-            "RETURN term, category, relatedTerm, relationshipContains, relationshipRelated " +
+            "OPTIONAL MATCH (category)-[relationshipContainsRelated:CONTAINS]->(relatedTerm) " +
+
+            "RETURN term, category, relatedTerm, relationshipContains, relationshipRelated, relationshipContainsRelated " +
             "ORDER BY relationshipRelated.WeightStartToEnd " +
            $"SKIP {request.Skip} " +
            $"LIMIT {request.Limit}", new { request });
