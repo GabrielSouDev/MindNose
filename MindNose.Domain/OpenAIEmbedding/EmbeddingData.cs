@@ -5,7 +5,7 @@ namespace MindNose.Domain.OpenAIEmbedding;
 public class EmbeddingData
 {
     [JsonPropertyName("object")]
-    public string Object { get; set; }
+    public string Object { get; set; } = string.Empty;
 
     [JsonPropertyName("index")]
     public int? Index { get; set; }

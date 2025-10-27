@@ -4,6 +4,6 @@ namespace MindNose.Domain.LLMModels;
 public class ModelResponse
 {
     [JsonPropertyName("data")]
-    public List<Model> Data { get; set; }
+    public List<Model> Data { get; set; } = new();
 
 }
