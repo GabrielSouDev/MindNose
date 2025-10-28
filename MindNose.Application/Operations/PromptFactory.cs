@@ -1,4 +1,5 @@
 ﻿using MindNose.Domain.CMDs;
+using MindNose.Domain.IAChat;
 using MindNose.Domain.Request;
 using MindNose.Domain.Results;
 using Neo4j.Driver;
@@ -114,6 +115,49 @@ namespace MindNose.Domain.Operations
             prompt = prompt.TrimEnd(',', '\n') + "\n]";
 
             return new Prompt(prompt);
+        }
+
+        internal static Prompt SendAIChat(ChatRequest request)
+        {
+            string prompt = $@"
+                Você é um redator técnico especializado. 
+                Sua tarefa é escrever um artigo completo e coeso que responda diretamente à pergunta central abaixo, utilizando os dados técnicos que fornecerei    em         seguida     como base argumentativa.
+                
+                ### Objetivo:
+                - Produzir um artigo com **estrutura narrativa fluida**, que conecte os conceitos apresentados
+                - **Responder à pergunta central** com clareza, profundidade e embasamento técnico
+                - Utilizar os dados fornecidos como **referência para construir os argumentos**
+                
+                ### Estrutura esperada:
+                1. **Título atrativo e relevante**
+                2. **Introdução envolvente**, que contextualize o tema e antecipe a pergunta central
+                3. **Desenvolvimento contínuo**, com parágrafos conectados e uso dos dados técnicos como base
+                4. **Conclusão reflexiva**, que sintetize os principais pontos e responda à pergunta central
+                
+                ### Dados técnicos:
+                Os dados virão no formato:
+                `Título: Resumo`
+                
+                Utilize esses dados como base para construir o artigo. Não os repita como tópicos isolados — integre-os ao texto de forma natural e explicativa.
+                
+                ";
+
+            if (request.ElementsHeader?.Count > 0)
+            {
+                foreach (var element in request.ElementsHeader)
+                {
+                    prompt += $"{element.Title}: {element.Summary}\n";
+                }
+            }
+
+            prompt += "### Pergunta central: \n";
+            prompt += request.Message.Text + "\n";
+
+            prompt += @"Escreva o artigo com linguagem profissional, objetiva e fluida. 
+                Evite listas ou tópicos desconectados. Construa uma narrativa que una os conceitos e leve à resposta da pergunta central.";
+
+            return new Prompt(prompt);
+
         }
     }
 }

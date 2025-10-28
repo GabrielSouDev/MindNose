@@ -9,5 +9,6 @@ public static class MindNoseCoreUseCaseExtensions
     {
         builder.Services.AddScoped<IGetLinks, GetLinks>();
         builder.Services.AddScoped<IGetOrCreateLinksUseCase, GetOrCreateLinksUseCase>();
+        builder.Services.AddScoped<ISendAIChat, SendAIChat>();
     }
 }

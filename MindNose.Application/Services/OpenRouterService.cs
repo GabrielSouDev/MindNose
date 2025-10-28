@@ -1,6 +1,8 @@
 ﻿using MindNose.Domain.CMDs;
+using MindNose.Domain.IAChat;
 using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.Interfaces.Services;
+using MindNose.Domain.OpenAIEmbedding;
 using MindNose.Domain.Operations;
 using MindNose.Domain.Request;
 using MindNose.Domain.Results;
@@ -40,6 +42,17 @@ namespace MindNose.Domain.Services
             termResult = response.RelatedTermResultDeserializer(termResult);
 
             return termResult;
+        }
+
+        public async Task<string> SendAIChatAsync(ChatRequest request)
+        {
+            Prompt prompt = PromptFactory.SendAIChat(request);
+
+            var response = await SubmitPromptAsync(prompt, request.Model);
+
+            var (responseString, usage) = response.ChatAIDeserializer();
+
+            return responseString;
         }
 
         public async Task<string> SubmitPromptAsync(Prompt prompt, string llmModel = "mistralai/mistral-small-3.2-24b-instruct")

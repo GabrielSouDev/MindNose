@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.CMDs;
 using MindNose.Domain.Configurations;
+using MindNose.Domain.Exceptions;
+using MindNose.Domain.Interfaces.Clients;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -57,7 +58,7 @@ namespace MindNose.Infrastructure.HttpClients
             }
             catch (Exception e)
             {
-                throw new ApplicationException("Error sending request to OpenRouter API, ", e);
+                throw new OpenRouterRequestException("Error sending request to OpenRouter API, ", e);
             }
         }
     }

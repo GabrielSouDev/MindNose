@@ -123,6 +123,27 @@ public static partial class IAResponseFormat
         return linksResult;
     }
 
+    public static (string, Usage) ChatAIDeserializer(this string response)
+    {
+        var responseJson = JsonDocument.Parse(response);
+        var content = responseJson
+            .RootElement
+            .GetProperty("choices")[0]
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString();
+
+        var usageJson = responseJson
+            .RootElement
+            .GetProperty("usage");
+
+        var match = Regex.Match(content!, "```(json)?\\s*(.*?)\\s*```", RegexOptions.Singleline);
+        var innerJson = match.Success ? match.Groups[2].Value : content;
+        var usage = JsonSerializer.Deserialize<Usage>(usageJson.GetRawText());
+
+        return (innerJson, usage);
+    }
+
     private static void DEBUG(this LinksResult termObj)
     {
         Console.WriteLine($"Category: {termObj.Category.Title}");
