@@ -32,8 +32,8 @@ namespace MindNose.Infrastructure.HttpClients
             _httpClient.DefaultRequestHeaders.Add("HTTP-Referer", _settings.site);
             _httpClient.DefaultRequestHeaders.Add("X-Title", _settings.ProjectTitle);
         }
-        public Task<string> EnviarPromptAsync(Prompt prompt) => EnviarPromptAsync(prompt, llmModel:"mistralai/mistral-small-3.2-24b-instruct");
-        public async Task<string> EnviarPromptAsync(Prompt prompt, string llmModel = "mistralai/mistral-small-3.2-24b-instruct")
+        public Task<string> EnviarPromptAsync(Prompt prompt) => EnviarPromptAsync(prompt, llmModel: "qwen/qwen-turbo");
+        public async Task<string> EnviarPromptAsync(Prompt prompt, string llmModel = "qwen/qwen-turbo")
         {
             var body = new
             {

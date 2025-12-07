@@ -42,7 +42,7 @@ public class LinksRequest
             }
         }
     }
-    public string? LLMModel { get; set; } = "mistralai/mistral-small-3.2-24b-instruct";
+    public string? LLMModel { get; set; } = "qwen/qwen-turbo";
     public int? RelatedTermQuantity { get; set; } = 5;
     public int? LengthPath { get; set; } = 1;
     public int? Limit { get; set; } = 10;

@@ -55,7 +55,7 @@ namespace MindNose.Domain.Services
             return responseString;
         }
 
-        public async Task<string> SubmitPromptAsync(Prompt prompt, string llmModel = "mistralai/mistral-small-3.2-24b-instruct")
+        public async Task<string> SubmitPromptAsync(Prompt prompt, string llmModel = "qwen/qwen-turbo")
         {
             var result = await _openRouterClient.EnviarPromptAsync(prompt, llmModel);
             return result;

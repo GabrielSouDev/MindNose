@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MindNose.Domain.LLMModels;
+namespace MindNose.Domain.
+    s;
 public class Architecture
 {
     [JsonPropertyName("modality")]
