@@ -13,5 +13,6 @@ public static class ServicesExtensions
         builder.Services.AddScoped<INeo4jService, Neo4jService>();
         builder.Services.AddScoped<IOpenRouterService, OpenRouterService>();
         builder.Services.AddSingleton<ICategoryService, CategoryService>();
+        builder.Services.AddScoped<UserService>();
     }
 }

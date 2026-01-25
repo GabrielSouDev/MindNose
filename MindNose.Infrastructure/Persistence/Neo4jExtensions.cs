@@ -117,26 +117,27 @@ public static class Neo4jExtensions
 
             if (relationshipValue is IPath path)
             {
+                // Todos os relacionamentos de um mesmo path recebem o mesmo PathId
                 foreach (var relationship in path.Relationships)
                 {
-                    relationshipList.Add(RelationshipsMap(relationship));
-
-                    relationshipList[pathId - 1].PathId = pathId;
+                    var mapped = RelationshipsMap(relationship);
+                    mapped.PathId = pathId;
+                    relationshipList.Add(mapped);
                 }
-                pathId++;
-
+                pathId++; // Incrementa apenas após processar todo o path
             }
-            else if(relationshipValue is IRelationshipDriver relationship)
+            else if (relationshipValue is IRelationshipDriver relationship)
             {
                 var mapped = RelationshipsMap(relationship);
-                mapped.PathId = pathId;
+                mapped.PathId = pathId; // Cada relacionamento único recebe seu PathId
                 relationshipList.Add(mapped);
-
                 pathId++;
             }
         }
+
         return relationshipList;
     }
+
 
     private static IRelationship RelationshipsMap(IRelationshipDriver relationship)
     {

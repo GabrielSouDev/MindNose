@@ -6,6 +6,7 @@ using Tokenizers.HuggingFace.Tokenizer;
 
 namespace MindNose.Infrastructure.HttpClients;
 
+// TODO: limpar função
 public class LocalEmbeddingClient : IEmbeddingClient, IInitializable, IDisposable
 {
     private readonly Lazy<InferenceSession>? _onnxSessionLazy;

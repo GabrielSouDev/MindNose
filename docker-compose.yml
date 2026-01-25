@@ -1,45 +1,71 @@
 services:
-  mindnose:
-    image: gabrielsouz/mindnose:latest
-    container_name: mindnose_core
-    ports:
-      - 5000:8080
-    env_file:
-      - .env
-    environment:
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - ASPNETCORE_HTTP_PORTS=8080
-      - DBHOST=${DBHOST}
-      - DBUSER=${DBUSER}
-      - DBPASSWORD=${DBPASSWORD}
-      - ASPNETCORE_URLS=http://0.0.0.0:8080
-    depends_on:
-      - neo4j
-    volumes:
-        - ./EmbeddingModels:/app/EmbeddingModels
-        - ./Storage:/app/Storage
-        - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-        - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-        - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-        - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-        
-  neo4j: 
-    image: neo4j:latest
-    container_name: neo4j
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    environment:
-      - NEO4J_AUTH=${DBUSER}/${DBPASSWORD}
-      - server.memory.pagecache.size=1G
-      - server.memory.heap.initial_size=512m
-      - server.memory.heap.max_size=1G
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-      - neo4j_plugins:/plugins
+    mindnose:
+        image: gabrielsouz/mindnose:latest
+        container_name: mindnose.core-api
+        ports:
+            - 5000:8080
+        env_file:
+            - .env
+        networks:  
+            - postgres-net
+            - neo4j-net
+        environment:
+            - ASPNETCORE_HTTP_PORTS=8080
+            - ASPNETCORE_URLS=http://0.0.0.0:8080
+            
+            - Neo4j__Host=bolt://neo4j:7687
+            - Postgres__Host=postgres
+        depends_on:
+            - neo4j
+            - postgres
+        volumes:
+            - ./EmbeddingModels:/app/EmbeddingModels
+            - ./Storage:/app/Storage
+            - ./keys:/app/keys
+            - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+            - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+            - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+            - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+          
+    neo4j: 
+        image: neo4j:latest
+        container_name: mindnose.neo4j-db
+        networks:
+            - neo4j-net
+        ports:
+            - "7474:7474"
+            - "7687:7687"
+        environment:
+            - NEO4J_AUTH=${Neo4j__Username}/${Neo4j__Password}
+            - server.memory.pagecache.size=1G
+            - server.memory.heap.initial_size=512m
+            - server.memory.heap.max_size=1G
+        volumes:
+            - neo4j_data:/data
+            - neo4j_logs:/logs
+            - neo4j_plugins:/plugins
+    
+    postgres: 
+        image: postgres:latest
+        container_name: mindnose.postgres-db 
+        restart: always 
+        networks: 
+            - postgres-net 
+        ports: 
+            - "${POSTGRES__PORT}:5432" 
+        environment: 
+            POSTGRES_DB: ${Postgres__Name} 
+            POSTGRES_USER: ${Postgres__User} 
+            POSTGRES_PASSWORD: ${Postgres__Password} 
+        volumes: 
+            - pgdata:/var/lib/postgresql
+  
+networks: 
+    postgres-net:
+    neo4j-net:
 
 volumes:
-  neo4j_data:
-  neo4j_logs:
-  neo4j_plugins:
+    pgdata:
+    neo4j_data:
+    neo4j_logs:
+    neo4j_plugins:

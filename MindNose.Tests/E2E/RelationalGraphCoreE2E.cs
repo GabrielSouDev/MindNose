@@ -1,4 +1,5 @@
-﻿using MindNose.Domain.Services;
+﻿using MindNose.Application.Services;
+using MindNose.Domain.Services;
 using MindNose.Infrastructure.HttpClients;
 using MindNose.Infrastructure.Persistence;
 using MindNose.Tests.Integration;
@@ -21,13 +22,13 @@ namespace MindNose.Tests.E2E
 
             //_relationalGraphCoreController = new(openRouterService, neo4jService); 
         }
-        [Fact]
-        public async Task RelationalGraphCore() 
-        {
-            //refazer tudo para um httpclient da api
-            //var response = await _relationalGraphCoreController.SearchAndCreateKnowledgeNode("Programação", "Javascript");
+        //[Fact]
+        //public async Task RelationalGraphCore() 
+        //{
+        //    //refazer tudo para um httpclient da api
+        //    //var response = await _relationalGraphCoreController.SearchAndCreateKnowledgeNode("Programação", "Javascript");
 
-            //var resultOk = Assert.IsType<OkObjectResult>(response);
-        }
+        //    //var resultOk = Assert.IsType<OkObjectResult>(response);
+        //}
     }
 }

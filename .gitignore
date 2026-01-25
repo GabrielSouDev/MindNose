@@ -5,10 +5,13 @@
 
 checklist.md
 Storage/
-
+keys/
 .idea/
+docker-compose.dcproj
 .vscode/
 witch main
+MindNose.Infrastructure/Persistence/ApplicationDbContextFactory.cs
+MindNose.Tests/
 
 
 #Secrets
