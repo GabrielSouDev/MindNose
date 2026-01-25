@@ -18,7 +18,7 @@ public class AuthController : ControllerBase
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] UserRequest userRequest)
     {
-        var result = await _userService.Register(userRequest);
+        var result = await _userService.RegisterUserAsync(userRequest);
 
         if(!result.Succeeded)
             return BadRequest(result.Errors);
@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
-        var token = await _userService.Login(loginRequest);
+        var token = await _userService.LoginAsync(loginRequest);
 
         if(string.IsNullOrEmpty(token))
             return Unauthorized();

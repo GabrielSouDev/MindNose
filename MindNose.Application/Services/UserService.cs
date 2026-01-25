@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MindNose.Domain.Configurations;
+using MindNose.Domain.Consts;
 using MindNose.Domain.Request.User;
 using MindNose.Infrastructure.Persistence;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,7 +22,7 @@ public class UserService
         _jwtSettings = jwtSettings;
     }
 
-    public async Task<IdentityResult> Register(UserRequest userRequest)
+    public async Task<IdentityResult> RegisterUserAsync(UserRequest userRequest)
     {
         var user = new ApplicationUser
         {
@@ -30,23 +31,24 @@ public class UserService
         };
 
         var result = await _userManager.CreateAsync(user, userRequest.Password);
+        await _userManager.AddToRoleAsync(user, Role.User);
 
         return result;
     }
 
-    public async Task<string> Login(LoginRequest loginRequest)
+    public async Task<string> LoginAsync(LoginRequest loginRequest)
     {
         var user = await _userManager.FindByEmailAsync(loginRequest.Email);
 
         if (user is null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
             return string.Empty;
 
-        var token = await GenarateJwt(user);
+        var token = await GenarateJwtAsync(user);
 
         return token;
     }
 
-    private async Task<string> GenarateJwt(ApplicationUser user)
+    private async Task<string> GenarateJwtAsync(ApplicationUser user)
     {
         var jwtSettings = _jwtSettings.CurrentValue;
 
