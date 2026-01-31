@@ -13,10 +13,10 @@ namespace MindNose.Application.Services;
 
 public class UserService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly IOptionsMonitor<JWTSettings> _jwtSettings;
 
-    public UserService(UserManager<ApplicationUser> userManager, IOptionsMonitor<JWTSettings> jwtSettings)
+    public UserService(UserManager<User> userManager, IOptionsMonitor<JWTSettings> jwtSettings)
     {
         _userManager = userManager;
         _jwtSettings = jwtSettings;
@@ -24,7 +24,7 @@ public class UserService
 
     public async Task<IdentityResult> RegisterUserAsync(UserRequest userRequest)
     {
-        var user = new ApplicationUser
+        var user = new User
         {
             UserName = userRequest.UserName,
             Email = userRequest.Email,
@@ -48,7 +48,7 @@ public class UserService
         return token;
     }
 
-    private async Task<string> GenarateJwtAsync(ApplicationUser user)
+    private async Task<string> GenarateJwtAsync(User user)
     {
         var jwtSettings = _jwtSettings.CurrentValue;
 
@@ -56,7 +56,7 @@ public class UserService
 
         var claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email!),
             new Claim(ClaimTypes.Name, user.UserName!),
         };

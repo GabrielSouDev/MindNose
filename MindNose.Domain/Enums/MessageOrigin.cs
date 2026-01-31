@@ -1,5 +1,6 @@
 ﻿namespace MindNose.Domain.Enums;
-public enum IAChatOrigin
+
+public enum MessageOrigin
 {
     System,
     User

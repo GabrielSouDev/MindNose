@@ -23,16 +23,19 @@ public class AuthController : ControllerBase
         if(!result.Succeeded)
             return BadRequest(result.Errors);
 
-        return Created();
+        return CreatedAtAction(nameof(Register), new { email = userRequest.Email });
     }
 
     [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
         var token = await _userService.LoginAsync(loginRequest);
 
         if(string.IsNullOrEmpty(token))
-            return Unauthorized();
+            return Unauthorized("E-mail ou senha inválidos.");
 
         return Ok(new { token });
     }

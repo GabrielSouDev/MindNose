@@ -12,7 +12,7 @@ public static class AuthExtensions
     public static void AddAuth(this WebApplicationBuilder builder)
     {
         // TODO: Ajustar Identity e JWT para subir para PROD.
-        builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
         {
             options.Password.RequireDigit = true;
             options.Password.RequiredLength = 6;

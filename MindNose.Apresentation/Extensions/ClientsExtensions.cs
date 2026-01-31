@@ -20,7 +20,7 @@ public static class ClientsExtensions
             var postgresSettings = builder.Configuration.GetSection("Postgres").Get<PostgresSettings>() ?? 
                                         throw new Exception("Não foi possivel configurar o Postgres.");
 
-            options.UseNpgsql(postgresSettings.ConnectionString);
+            options.UseNpgsql(postgresSettings.ConnectionString, b => b.MigrationsAssembly("MindNose.Infrastructure"));
         });
     }
 }

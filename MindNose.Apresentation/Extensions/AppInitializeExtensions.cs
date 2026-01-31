@@ -19,8 +19,8 @@ public static class AppInitializeExtensions
             var neo4jClient = scope.ServiceProvider.GetRequiredService<INeo4jClient>();
             var categoryService = scope.ServiceProvider.GetRequiredService<ICategoryService>();
             var postgresService = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>(); 
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>(); 
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
             var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
             if (isLocalEmbedding)
