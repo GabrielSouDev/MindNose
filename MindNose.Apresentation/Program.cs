@@ -20,6 +20,7 @@ builder.AddConfigurations();
 
 builder.AddEmbeddingClient(isLocalEmbedding, embeddingModel);
 builder.AddClients();
+builder.AddRepositories();
 
 builder.AddAuth();
 
