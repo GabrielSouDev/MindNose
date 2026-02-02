@@ -24,9 +24,24 @@ public partial class UtilsController : ControllerBase
     }
 
     [Authorize(Roles = Role.Admin)]
-    [HttpGet("AddCategory")]
-    public async Task<CategoryResult> AddCategory(string category) =>
-        await _addCategory.ExecuteAsync(category);
+    [HttpPost("AddCategory")]
+    public async Task<IActionResult> AddCategory([FromBody] string category)
+    {
+        bool sucess;
+
+        try
+        {
+            sucess = await _addCategory.ExecuteAsync(category);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+        if (sucess) return NoContent();
+
+        return Conflict();
+    }
 
     [AllowAnonymous]
     [HttpGet("GetCategories")]

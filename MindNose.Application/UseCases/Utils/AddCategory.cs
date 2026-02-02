@@ -18,25 +18,23 @@ public class AddCategory : IAddCategory
         _categoryService = categoryService;
     }
 
-    public async Task<CategoryResult> ExecuteAsync(string category)
+    public async Task<bool> ExecuteAsync(string category)
     {
         var categoryLinks = await _neo4jService.IfCategoryExistsReturnLinksAsync(category);
-
-        LinksResult linkResult = new();
-        if (categoryLinks is null)
-        {
-            linkResult = await _openRouterService.CreateCategoryResult(category);
-
-            categoryLinks = await _neo4jService.AddCategory(linkResult);
-            _categoryService.AddCategory(linkResult.Category);
-        }else
-            return categoryLinks.Nodes.Select(c =>
+        var categoryResult = categoryLinks?.Nodes.Select(c =>
                                 new CategoryResult()
                                 {
                                     Title = c.Properties.Title,
                                     Summary = c.Properties.Summary
                                 }).First();
 
-        return linkResult.Category;
+        if (categoryResult is not null && !string.IsNullOrEmpty(categoryResult.Title))
+            return false;
+
+        var linkResult = await _openRouterService.CreateCategoryResult(category);
+        categoryLinks = await _neo4jService.AddCategory(linkResult);
+        _categoryService.AddCategory(linkResult.Category);
+
+        return true;
     }
 }

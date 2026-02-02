@@ -5,5 +5,5 @@ namespace MindNose.Domain.Interfaces.UseCases.Utils;
 
 public interface IAddCategory
 {
-    Task<CategoryResult> ExecuteAsync(string category);
+    Task<bool> ExecuteAsync(string category);
 }
