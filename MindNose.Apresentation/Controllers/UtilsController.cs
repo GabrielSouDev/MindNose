@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MindNose.Domain.Consts;
 using MindNose.Domain.Interfaces.UseCases.Utils;
 using MindNose.Domain.LLMModels;
 using MindNose.Domain.Nodes;
@@ -21,14 +23,17 @@ public partial class UtilsController : ControllerBase
         _addCategory = addCategory;
     }
 
+    [Authorize(Roles = Role.Admin)]
     [HttpGet("AddCategory")]
     public async Task<CategoryResult> AddCategory(string category) =>
         await _addCategory.ExecuteAsync(category);
 
+    [AllowAnonymous]
     [HttpGet("GetCategories")]
     public List<CategoryResult> GetCategoryList() =>
         _getCategoryList.ExecuteAsync();
-    
+
+    [AllowAnonymous]
     [HttpGet("GetModels")]
     public ModelResponse GetModelsIdList() =>
         _getModels.Execute();

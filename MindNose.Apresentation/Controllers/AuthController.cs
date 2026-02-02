@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MindNose.Application.Services;
 using MindNose.Domain.Request.User;
 
@@ -15,6 +16,7 @@ public class AuthController : ControllerBase
         _userService = userService;
     }
 
+    [AllowAnonymous]
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] UserRequest userRequest)
     {
@@ -26,6 +28,7 @@ public class AuthController : ControllerBase
         return CreatedAtAction(nameof(Register), new { email = userRequest.Email });
     }
 
+    [AllowAnonymous]
     [HttpPost("Login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {

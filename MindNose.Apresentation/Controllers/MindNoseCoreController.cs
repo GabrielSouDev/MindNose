@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MindNose.Domain.Consts;
 using MindNose.Domain.Exceptions;
 using MindNose.Domain.Extensions;
 using MindNose.Domain.IAChat;
@@ -23,6 +25,7 @@ public class MindNoseCoreController : ControllerBase
         _sendAIChat = sendAIChat;
     }
 
+    [Authorize(Policy = Poly.UserOrAdmin)]
     [HttpGet("GetLink")]
     public async Task<IActionResult> GetLinksAsync([FromQuery] LinksRequest request)
     {
@@ -37,6 +40,7 @@ public class MindNoseCoreController : ControllerBase
         }
     }
 
+    [Authorize(Policy = Poly.UserOrAdmin)]
     [HttpPost("GetOrCreateLink")]
     public async Task<IActionResult> GetOrCreateLinksAsync([FromBody] LinksRequest request)
     {
@@ -56,6 +60,7 @@ public class MindNoseCoreController : ControllerBase
         }
     }
 
+    [Authorize(Policy = Poly.UserOrAdmin)]
     [HttpPost("SendAIChat")]
     public async Task<IActionResult> SendAIChatAsync([FromBody] ChatRequest request)
     {

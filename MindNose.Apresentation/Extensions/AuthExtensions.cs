@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using MindNose.Domain.Configurations;
+using MindNose.Domain.Consts;
 using MindNose.Infrastructure.Persistence;
 using System.Text;
 
@@ -46,5 +47,11 @@ public static class AuthExtensions
                         ClockSkew = TimeSpan.FromMinutes(int.Parse(jwtSettings.ExpireMinutes))
                     };
                 });
+
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("UserOrAdmin", policy =>
+                policy.RequireRole(Role.User, Role.Admin));
+        });
     }
 }

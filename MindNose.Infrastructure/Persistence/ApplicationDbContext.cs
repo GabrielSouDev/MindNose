@@ -21,7 +21,22 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
 
     public async Task SeedDataAsync(UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager, UserRequest adminRequest)
     {
-        await Database.MigrateAsync();
+        var retries = 1;
+        while (true)
+        {
+            try
+            {
+                await Database.MigrateAsync();
+                break;
+            }
+            catch (Npgsql.NpgsqlException)
+            {
+                Console.WriteLine("#");
+                retries++;
+                if (retries > 10) throw;
+                await Task.Delay(2000); // espera 3s e tenta novamente
+            }
+        }
 
         foreach (var role in Role.All)
         {
