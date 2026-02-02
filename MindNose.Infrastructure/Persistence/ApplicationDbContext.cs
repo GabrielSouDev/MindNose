@@ -29,12 +29,12 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
                 await Database.MigrateAsync();
                 break;
             }
-            catch (Npgsql.NpgsqlException)
+            catch (Npgsql.NpgsqlException ex)
             {
-                Console.WriteLine("#");
+                Console.WriteLine($"# {retries} - Tentativa de conexão ao Postgres falha!  Error: {ex.Message}");
                 retries++;
-                if (retries > 10) throw;
-                await Task.Delay(2000); // espera 3s e tenta novamente
+                if (retries >= 10) throw;
+                await Task.Delay(2000);
             }
         }
 
