@@ -23,6 +23,4 @@ RUN dotnet publish "./MindNose.Apresentation.csproj" -c $BUILD_CONFIGURATION -o 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-RUN rm -f /app/appsettings.json
-RUN rm -f /app/appsettings.Development.json
 ENTRYPOINT ["dotnet", "MindNose.Apresentation.dll"]
