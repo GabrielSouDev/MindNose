@@ -2,5 +2,5 @@
 public interface IEmbeddingClient
 {
     Task<double[][]> GetSentenceEmbeddingAsync(string[] sentences);
-    float CosineSimilarity(double[] firstVector, double[] secondVector);
+    double CosineSimilaritySIMD(double[] firstVector, double[] secondVector);
 }

@@ -2,6 +2,7 @@
 using Microsoft.ML.OnnxRuntime.Tensors;
 using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.Interfaces.Commons;
+using System.Numerics;
 using Tokenizers.HuggingFace.Tokenizer;
 
 namespace MindNose.Infrastructure.HttpClients;
@@ -115,22 +116,43 @@ public class LocalEmbeddingClient : IEmbeddingClient, IInitializable, IDisposabl
 
         return embeddings;
     }
-
-
-    public float CosineSimilarity(double[] firstVector, double[] secondVector)
+    public double CosineSimilaritySIMD(double[] a, double[] b)
     {
-        double dotProductSum = 0.0;
-        double firstVectorNormSquared = 0.0;
-        double secondVectorNormSquared = 0.0;
+        if (a.Length != b.Length) throw new ArgumentException("Tamanho dos vetores necessitam ser iguais!");
 
-        for (int dimensionIndex = 0; dimensionIndex < firstVector.Length; dimensionIndex++)
+        int simdLength = Vector<double>.Count;
+        int i = 0;
+
+        var dotVec = Vector<double>.Zero;
+        var magAVec = Vector<double>.Zero;
+        var magBVec = Vector<double>.Zero;
+
+        for (; i <= a.Length - simdLength; i += simdLength)
         {
-            dotProductSum += firstVector[dimensionIndex] * secondVector[dimensionIndex];
-            firstVectorNormSquared += firstVector[dimensionIndex] * firstVector[dimensionIndex];
-            secondVectorNormSquared += secondVector[dimensionIndex] * secondVector[dimensionIndex];
+            var va = new Vector<double>(a, i);
+            var vb = new Vector<double>(b, i);
+
+            dotVec += va * vb;
+            magAVec += va * va;
+            magBVec += vb * vb;
         }
 
-        return (float)(dotProductSum / (Math.Sqrt(firstVectorNormSquared) * Math.Sqrt(secondVectorNormSquared)));
+        double dot = 0, magA = 0, magB = 0;
+        for (int j = 0; j < simdLength; j++)
+        {
+            dot += dotVec[j];
+            magA += magAVec[j];
+            magB += magBVec[j];
+        }
+
+        for (; i < a.Length; i++)
+        {
+            dot += a[i] * b[i];
+            magA += a[i] * a[i];
+            magB += b[i] * b[i];
+        }
+
+        return dot / (Math.Sqrt(magA) * Math.Sqrt(magB));
     }
 
     private static long[] PadOrTruncate(long[] arr, int maxLength)

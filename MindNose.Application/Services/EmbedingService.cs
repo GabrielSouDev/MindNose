@@ -23,7 +23,7 @@ namespace MindNose.Domain.Services
 
             var sentenceEmbeddings = await _embeddingClient.GetSentenceEmbeddingAsync(sentences.ToArray());
 
-            var similarityCategoryToTerm = _embeddingClient.CosineSimilarity(sentenceEmbeddings[0], sentenceEmbeddings[1]);
+            var similarityCategoryToTerm = _embeddingClient.CosineSimilaritySIMD(sentenceEmbeddings[0], sentenceEmbeddings[1]);
             termResult.CategoryToTermWeigth = similarityCategoryToTerm;
 
             var relatedTermsEmbeddings = sentenceEmbeddings.Skip(2).ToArray();
@@ -32,10 +32,10 @@ namespace MindNose.Domain.Services
             for (int candidateIndex = 0; candidateIndex < relatedTermsEmbeddings.Length; candidateIndex++)
             {
                 var similarityRelatedTermToCategory =
-                    _embeddingClient.CosineSimilarity(relatedTermsEmbeddings[candidateIndex], sentenceEmbeddings[0]);
+                    _embeddingClient.CosineSimilaritySIMD(relatedTermsEmbeddings[candidateIndex], sentenceEmbeddings[0]);
 
                 var similarityRelatedTermToTerm = 
-                    _embeddingClient.CosineSimilarity(relatedTermsEmbeddings[candidateIndex], sentenceEmbeddings[1]);
+                    _embeddingClient.CosineSimilaritySIMD(relatedTermsEmbeddings[candidateIndex], sentenceEmbeddings[1]);
 
                 termResult.RelatedTerms[candidateIndex].CategoryToRelatedTermWeigth = similarityRelatedTermToCategory;
                 termResult.RelatedTerms[candidateIndex].InitialTermToRelatedTermWeigth = similarityRelatedTermToTerm;

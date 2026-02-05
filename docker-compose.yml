@@ -28,7 +28,7 @@ services:
             - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
           
     neo4j: 
-        image: neo4j:latest
+        image: neo4j:5.26.21-community-ubi9
         container_name: mindnose.neo4j-db
         networks:
             - neo4j-net
@@ -46,7 +46,7 @@ services:
             - neo4j_plugins:/plugins
     
     postgres: 
-        image: postgres:latest
+        image: postgres:15
         container_name: mindnose.postgres-db 
         restart: always 
         networks: 

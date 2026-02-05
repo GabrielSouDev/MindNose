@@ -42,7 +42,7 @@ namespace MindNose.Infrastructure.HttpClients
                 {
                 new { role = "user", content = prompt.Message }
             },
-                temperature = 0.0
+                temperature = 0.2
             };
 
             var json = JsonSerializer.Serialize(body);
