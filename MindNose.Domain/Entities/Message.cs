@@ -8,5 +8,6 @@ public class Message : BaseEntity
     public ConversationGuide ConversationGuide { get; set; } = default!;
     public string Text { get; set; } = string.Empty;
     public string Model { get; set; } = string.Empty;
+    public OutputMode OutputMode { get; set; } = OutputMode.Conversational;
     public MessageOrigin Origin { get; set; } = MessageOrigin.System;
 }
