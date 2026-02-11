@@ -8,7 +8,7 @@ public static class MindNoseCoreUseCaseExtensions
     public static void AdMindNoseCoreUseCase(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IGetLinks, GetLinks>();
-        builder.Services.AddScoped<IGetOrCreateLinksUseCase, GetOrCreateLinksUseCase>();
+        builder.Services.AddScoped<IGetOrCreateLinks, GetOrCreateLinks>();
         builder.Services.AddScoped<ISendAIChat, SendAIChat>();
     }
 }

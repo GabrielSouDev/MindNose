@@ -17,9 +17,9 @@ namespace MindNose.Domain.Services
         {
             List<string> sentences = new(); 
 
-            sentences.Add($"{termResult.Category.Title}: {termResult.Category.Summary}");
-            sentences.Add($"{termResult.Term.Title}: {termResult.Term.Summary}");
-            sentences.AddRange(termResult.RelatedTerms.Select(rt => $"{rt.Title}: {rt.Summary}").ToList());
+            sentences.Add($"{termResult.Category.TitleId}: {termResult.Category.Summary}");
+            sentences.Add($"{termResult.Term.TitleId}: {termResult.Term.Summary}");
+            sentences.AddRange(termResult.RelatedTerms.Select(rt => $"{rt.TitleId}: {rt.Summary}").ToList());
 
             var sentenceEmbeddings = await _embeddingClient.GetSentenceEmbeddingAsync(sentences.ToArray());
 

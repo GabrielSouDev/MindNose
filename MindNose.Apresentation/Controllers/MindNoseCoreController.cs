@@ -15,13 +15,13 @@ public class MindNoseCoreController : ControllerBase
 {
 
     private readonly IGetLinks _getLinks;
-    private readonly IGetOrCreateLinksUseCase _getOrCreateLinksUseCase;
+    private readonly IGetOrCreateLinks _getOrCreateLinks;
     private readonly ISendAIChat _sendAIChat;
 
-    public MindNoseCoreController(IGetLinks getLinks, IGetOrCreateLinksUseCase getOrCreateLinksUseCase, ISendAIChat sendAIChat)
+    public MindNoseCoreController(IGetLinks getLinks, IGetOrCreateLinks getOrCreateLinksUseCase, ISendAIChat sendAIChat)
     {
         _getLinks = getLinks;
-        _getOrCreateLinksUseCase = getOrCreateLinksUseCase;
+        _getOrCreateLinks = getOrCreateLinksUseCase;
         _sendAIChat = sendAIChat;
     }
 
@@ -46,7 +46,7 @@ public class MindNoseCoreController : ControllerBase
     {
         try
         {
-            var link = await _getOrCreateLinksUseCase.ExecuteAsync(request);
+            var link = await _getOrCreateLinks.ExecuteAsync(request);
 
             return Ok(link.LinksToDTO());
         }

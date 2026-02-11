@@ -7,7 +7,7 @@ using Query = MindNose.Domain.CMDs.Query;
 
 namespace MindNose.Infrastructure.Persistence;
 
-public static class QueryFactory
+public static class CypherFactory
 {
     public static Query WarmUpWithOutResults() =>
         new Query(
@@ -24,25 +24,27 @@ public static class QueryFactory
             "WITH $termResult AS initialTerm " +
 
             // Categoria
-            "MERGE (category:Category { Title: initialTerm.Category.Title }) " +
+            "MERGE (category:Category { TitleId: initialTerm.Category.TitleId }) " +
             "ON MATCH SET " +
-                "category.PromptTokens     = coalesce(category.PromptTokens, 0) + initialTerm.Usage.prompt_tokens, " +
-                "category.CompletionTokens = coalesce(category.CompletionTokens, 0) + initialTerm.Usage.completion_tokens, " +
-                "category.TotalTokens      = coalesce(category.TotalTokens, 0) + initialTerm.Usage.total_tokens " +
+                "category.PromptTokens     = coalesce(category.PromptTokens, 0) + initialTerm.Usage.PromptTokens, " +
+                "category.CompletionTokens = coalesce(category.CompletionTokens, 0) + initialTerm.Usage.CompletionTokens, " +
+                "category.TotalTokens      = coalesce(category.TotalTokens, 0) + initialTerm.Usage.TotalTokens " +
 
             // Termo principal
-            "MERGE (term:Term { Title: initialTerm.Term.Title }) " +
+            "MERGE (term:Term { TitleId: initialTerm.Term.TitleId }) " +
             "ON CREATE SET " +
+                "term.Title            = initialTerm.Term.Title, " +
                 "term.Summary          = initialTerm.Term.Summary, " +
                 "term.CreatedAt        = initialTerm.CreatedAt, " +
-                "term.PromptTokens     = initialTerm.Usage.prompt_tokens, " +
-                "term.CompletionTokens = initialTerm.Usage.completion_tokens, " +
-                "term.TotalTokens      = initialTerm.Usage.total_tokens " +
+                "term.PromptTokens     = initialTerm.Usage.PromptTokens, " +
+                "term.CompletionTokens = initialTerm.Usage.CompletionTokens, " +
+                "term.TotalTokens      = initialTerm.Usage.TotalTokens " +
             "ON MATCH SET " +
+                "term.Title            = coalesce(term.Title, initialTerm.Term.Title), " +
                 "term.Summary          = coalesce(term.Summary, initialTerm.Term.Summary), " +
-                "term.PromptTokens     = coalesce(term.PromptTokens, 0) + initialTerm.Usage.prompt_tokens, " +
-                "term.CompletionTokens = coalesce(term.CompletionTokens, 0) + initialTerm.Usage.completion_tokens, " +
-                "term.TotalTokens      = coalesce(term.TotalTokens, 0) + initialTerm.Usage.total_tokens " +
+                "term.PromptTokens     = coalesce(term.PromptTokens, 0) + initialTerm.Usage.PromptTokens, " +
+                "term.CompletionTokens = coalesce(term.CompletionTokens, 0) + initialTerm.Usage.CompletionTokens, " +
+                "term.TotalTokens      = coalesce(term.TotalTokens, 0) + initialTerm.Usage.TotalTokens " +
 
             // Relacionamento categoria -> termo principal
             "MERGE (category)-[relationshipContains:CONTAINS]->(term) " +
@@ -57,8 +59,9 @@ public static class QueryFactory
             "UNWIND initialTerm.RelatedTerms AS relatedTermParam " +
 
             // Nó do termo relacionado
-            "MERGE (relatedTerm:Term { Title: relatedTermParam.Title }) " +
+            "MERGE (relatedTerm:Term { TitleId: relatedTermParam.TitleId }) " +
             "ON CREATE SET " +
+                "relatedTerm.Title   = relatedTermParam.Title, " +
                 "relatedTerm.Summary   = relatedTermParam.Summary, " +
                 "relatedTerm.CreatedAt = relatedTermParam.CreatedAt " +
 
@@ -88,7 +91,7 @@ public static class QueryFactory
     public static Query GetLinks(LinksRequest request) =>
         new Query(
             "WITH $request AS request " +
-            "MATCH path=(category:Category { Title: request.Category })-[relationshipContains:CONTAINS]->(term:Term { Title: request.Term }) " +
+            "MATCH path=(category:Category { TitleId: request.CategoryId })-[relationshipContains:CONTAINS]->(term:Term { TitleId: request.TermId }) " +
 
            $"OPTIONAL MATCH relatedPath = (term)-[:RELATED_TO*1..{request.LengthPath}]->(relatedTerm) " +
             "UNWIND CASE WHEN relatedPath IS NULL THEN [] ELSE relationships(relatedPath) END AS relationshipRelated " +
@@ -115,17 +118,19 @@ public static class QueryFactory
         new Query(
             "WITH $categoryResult AS newCategory " +
 
-            "MERGE (category:Category { Title: newCategory.Category.Title }) " +
+            "MERGE (category:Category { TitleId: newCategory.Category.TitleId }) " +
             "ON CREATE SET " +
+                "category.Title          = newCategory.Category.Title, " +
                 "category.Summary          = newCategory.Category.Summary, " +
                 "category.CreatedAt        = newCategory.CreatedAt, " +
-                "category.PromptTokens     = newCategory.Usage.prompt_tokens, " +
-                "category.CompletionTokens = newCategory.Usage.completion_tokens, " +
-                "category.TotalTokens      = newCategory.Usage.total_tokens " +
+                "category.PromptTokens     = newCategory.Usage.PromptTokens, " +
+                "category.CompletionTokens = newCategory.Usage.CompletionTokens, " +
+                "category.TotalTokens      = newCategory.Usage.TotalTokens " +
             "ON MATCH SET " +
+                "category.Title            = coalesce(category.Title, newCategory.Category.Title), " +
                 "category.Summary          = coalesce(category.Summary, newCategory.Category.Summary), " +
-                "category.PromptTokens     = coalesce(category.PromptTokens, 0) + newCategory.Usage.prompt_tokens, " +
-                "category.CompletionTokens = coalesce(category.CompletionTokens, 0) + newCategory.Usage.completion_tokens, " +
-                "category.TotalTokens      = coalesce(category.TotalTokens, 0) + newCategory.Usage.total_tokens "
+                "category.PromptTokens     = coalesce(category.PromptTokens, 0) + newCategory.Usage.PromptTokens, " +
+                "category.CompletionTokens = coalesce(category.CompletionTokens, 0) + newCategory.Usage.CompletionTokens, " +
+                "category.TotalTokens      = coalesce(category.TotalTokens, 0) + newCategory.Usage.TotalTokens "
             , new { categoryResult });
 }

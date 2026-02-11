@@ -41,7 +41,7 @@ namespace MindNose.Domain.Operations
 
                 Input real:
                 Categoria: {request.Category},
-                Explicação de Categoria: {request.GetCategorySummary()},
+                Explicação de Categoria: {request.CategorySummary},
                 Termo: {request.Term}";
             return new Prompt(prompt);
         }
@@ -92,15 +92,15 @@ namespace MindNose.Domain.Operations
 
         public static Prompt NewRelatedTermSummaries(LinksResult linksResult)
         {
-            var relatedTerms = linksResult.RelatedTerms.Select(rt => rt.Title).ToList();
+            var relatedTerms = linksResult.RelatedTerms.Select(rt => rt.TitleId).ToList();
 
             var prompt = @"Tarefa:
                             - Com base no JSON abaixo, gere uma explicação do RelatedTerm e insira no campo RelatedTermSummary.
                             - Tenha como base o contexto:";
             prompt += "\n";
-            prompt += $"{linksResult.Category.Title}: {linksResult.Category.Summary}\n";
+            prompt += $"{linksResult.Category.TitleId}: {linksResult.Category.Summary}\n";
             prompt += "e com o contexto principal:";
-            prompt += $"{linksResult.Term.Title}: {linksResult.Term.Summary}";
+            prompt += $"{linksResult.Term.TitleId}: {linksResult.Term.Summary}";
             prompt += "\n\n";
 
             prompt += "Formato esperado (responda **estritamente** neste formato JSON):\n";

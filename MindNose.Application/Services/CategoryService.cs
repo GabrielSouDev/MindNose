@@ -14,16 +14,11 @@ namespace MindNose.Application.Services
     {
         private List<CategoryResult> _categories = new();
 
-        public bool ContainsCategory(string category) => 
-            _categories.Select(c => c.Title)
-                       .ToList()
-                       .Contains(category);
-
         public void AddCategory(CategoryResult categories) =>
             _categories.Add(categories);
 
-        public CategoryResult GetCategory(string category) =>
-            _categories.Where(c => c.Title == category).First();
+        public CategoryResult? GetCategory(string categoryId) =>
+            _categories.FirstOrDefault(c => c.TitleId == categoryId);
 
         public List<CategoryResult> GetCategories() =>
             _categories;

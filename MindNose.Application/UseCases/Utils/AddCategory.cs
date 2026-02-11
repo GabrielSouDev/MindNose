@@ -28,7 +28,7 @@ public class AddCategory : IAddCategory
                                     Summary = c.Properties.Summary
                                 }).First();
 
-        if (categoryResult is not null && !string.IsNullOrEmpty(categoryResult.Title))
+        if (categoryResult is not null && !string.IsNullOrEmpty(categoryResult.TitleId))
             return false;
 
         var linkResult = await _openRouterService.CreateCategoryResult(category);

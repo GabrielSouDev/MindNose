@@ -3,7 +3,7 @@ using MindNose.Domain.Request;
 
 namespace MindNose.Domain.Interfaces.UseCases.MindNoseCore;
 
-public interface IGetOrCreateLinksUseCase
+public interface IGetOrCreateLinks
 {
     Task<Links> ExecuteAsync(LinksRequest request);
 }

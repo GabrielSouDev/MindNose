@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-namespace MindNose.Domain.Request;
+﻿namespace MindNose.Domain.Request;
 
 public class LinksRequest
 {
     private string _category {get;set;} = string.Empty;
+    public string CategoryId { get => _category.NormalizeIdentifier(); }
     public string Category
     {
         get => _category;
@@ -21,11 +15,12 @@ public class LinksRequest
             }
             else
             {
-                _category = value.CategoryNormalize();
+                _category = value;
             }
         }
     }
-    private string _categorySummary { get; set; } = string.Empty;
+    public string? CategorySummary { get; set; }
+    public string TermId { get => _term.NormalizeIdentifier(); }
     private string _term { get; set; } = string.Empty;
     public string Term
     {
@@ -38,7 +33,7 @@ public class LinksRequest
             }
             else
             {
-                _term = value.TermNormalize();
+                _term = value;
             }
         }
     }
@@ -47,7 +42,4 @@ public class LinksRequest
     public int? LengthPath { get; set; } = 1;
     public int? Limit { get; set; } = 10;
     public int? Skip { get; set; } = 0;
-
-    public string GetCategorySummary() => _categorySummary;
-    public string SetCategorySummary(string summary) => _categorySummary = summary;
 }

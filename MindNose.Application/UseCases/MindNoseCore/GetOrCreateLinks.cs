@@ -8,14 +8,14 @@ using MindNose.Domain.Results;
 
 namespace MindNose.Application.UseCases.MindNoseCore;
 
-public class GetOrCreateLinksUseCase : IGetOrCreateLinksUseCase
+public class GetOrCreateLinks : IGetOrCreateLinks
 {
     private readonly IOpenRouterService _openRouterService;
     private readonly IEmbeddingService _embeddingService;
     private readonly ICategoryService _categoryService;
     private readonly INeo4jService _neo4jService;
 
-    public GetOrCreateLinksUseCase(IOpenRouterService openRouterService, IEmbeddingService embeddingService, ICategoryService categoryService, INeo4jService neo4jService)
+    public GetOrCreateLinks(IOpenRouterService openRouterService, IEmbeddingService embeddingService, ICategoryService categoryService, INeo4jService neo4jService)
     {
         _openRouterService = openRouterService;
         _embeddingService = embeddingService;
@@ -25,14 +25,14 @@ public class GetOrCreateLinksUseCase : IGetOrCreateLinksUseCase
 
     public async Task<Links> ExecuteAsync(LinksRequest request)
     {
-        if(!_categoryService.ContainsCategory(request.Category))
+        var categoryResult = _categoryService.GetCategory(request.CategoryId);
+        if(categoryResult is null)
             throw new CategoryNotFoundException(); 
 
-        var categoryResult = _categoryService.GetCategory(request.Category);
-        request.SetCategorySummary(categoryResult.Summary);
+        request.CategorySummary = categoryResult.Summary;
 
         var link = new Links();
-        var notEmbeddingedTermResult = new LinksResult();
+        var notEmbeddedTermResult = new LinksResult();
         
         try
         {
@@ -40,9 +40,9 @@ public class GetOrCreateLinksUseCase : IGetOrCreateLinksUseCase
         }
         catch (LinksNotFoundException)
         {
-            notEmbeddingedTermResult = await _openRouterService.CreateTermResultAsync(request);
+            notEmbeddedTermResult = await _openRouterService.CreateTermResultAsync(request);
 
-            LinksResult termResult = await _embeddingService.MakeEmbeddingAsync(notEmbeddingedTermResult);
+            LinksResult termResult = await _embeddingService.MakeEmbeddingAsync(notEmbeddedTermResult);
             termResult.WasCreated = true;
             link = await _neo4jService.SaveTermResultAndReturnLinksAsync(termResult);
         }

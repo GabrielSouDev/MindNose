@@ -50,7 +50,7 @@ namespace MindNose.Domain.Services
 
             var response = await SubmitPromptAsync(prompt, request.Model);
 
-            var (responseString, usage) = response.ChatAIDeserializer();
+            var (responseString, usage) = response.ExtractContentAndUsage();
 
             return responseString;
         }

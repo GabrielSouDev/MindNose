@@ -64,7 +64,7 @@ public class Neo4jClient : INeo4jClient, IInitializable
 
     private async Task SimpleWarmUpAsync()
     {
-        var query = QueryFactory.WarmUpWithOutResults();
+        var query = CypherFactory.WarmUpWithOutResults();
 
         using var session = _client.AsyncSession();
 
@@ -84,7 +84,7 @@ public class Neo4jClient : INeo4jClient, IInitializable
     }
     public async Task<Links> GetLinksAsync(LinksRequest request)
     {
-        var query = QueryFactory.GetLinks(request);
+        var query = CypherFactory.GetLinks(request);
 
         var results = await ExecuteAsync(query);
 
@@ -97,7 +97,7 @@ public class Neo4jClient : INeo4jClient, IInitializable
     }
     public async Task<Links?> CreateAndReturnLinksAsync(LinksResult termResult)
     {
-        var query = QueryFactory.CreateLinks(termResult);
+        var query = CypherFactory.CreateLinks(termResult);
 
         var results = await ExecuteAsync(query);
 
@@ -113,7 +113,7 @@ public class Neo4jClient : INeo4jClient, IInitializable
 
     public async Task<Links?> GetCategories()
     {
-        Query query = QueryFactory.GetCategories();
+        Query query = CypherFactory.GetCategories();
 
         var results = await ExecuteAsync(query);
 
@@ -127,7 +127,7 @@ public class Neo4jClient : INeo4jClient, IInitializable
 
     public async Task<Links?> GetCategoryNodeAsync(string category)
     {
-        Query query = QueryFactory.GetCategory(category);
+        Query query = CypherFactory.GetCategory(category);
 
         var results = await ExecuteAsync(query);
 
@@ -141,7 +141,7 @@ public class Neo4jClient : INeo4jClient, IInitializable
 
     public async Task<Links?> CreateCategoryAndReturnLinks(LinksResult? categoryLinks)
     {
-        var query = QueryFactory.CreateCategory(categoryLinks);
+        var query = CypherFactory.CreateCategory(categoryLinks);
 
         var results = await ExecuteAsync(query);
 
