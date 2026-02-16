@@ -7,7 +7,8 @@ namespace MindNose.Domain.Nodes
     public interface IProperties
     {
         public string Title { get; set; }
-        public string Summary { get; set; }
+        public string Summary { get; }
+        public double[]? Embedding { get; set; }
         public int PromptTokens { get; set; }
         public int CompletionTokens { get; set; }
         public int TotalTokens { get; set; }

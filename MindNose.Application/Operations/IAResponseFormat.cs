@@ -29,96 +29,60 @@ public static partial class IAResponseFormat
 
         return (contentJson, usage);
     }
-    public static LinksResult TermResultDeserializer(this string response)
+
+    public static (TermResultParcial, Usage) TermResultDeserializer(this string response)
     {
         var (contentJson, usage) = response.ExtractContentAndUsage();
 
-        var partialTermResult = JsonSerializer.Deserialize<PartialTermResult>(contentJson!);
-
-        if(partialTermResult is null || usage is null)
-            throw new ArgumentNullException(nameof(PartialTermResult), "TermResult object is null in Deserializer!");
-
-        LinksResult termResult = new()
-        {
-            Category = new CategoryResult() { Title = partialTermResult.Category, Summary = partialTermResult.CategorySummary },
-            Term = new TermResult() { Title = partialTermResult.Term, Summary = partialTermResult.TermSummary },
-            CreatedAt = partialTermResult.CreatedAt,
-            Usage = usage
-        };
-
-        foreach (var relatedTerms in partialTermResult.RelatedTerms)
-        {
-            RelatedTermResult rTerm = new()
-            {
-                Title = relatedTerms,
-                CreatedAt = partialTermResult.CreatedAt
-            };
-            termResult.RelatedTerms.Add(rTerm);
-        }
-
-        return termResult;
-    }
-
-    public static LinksResult CategoryResultDeserializer(this string response)
-    {
-        var (contentJson, usage) = response.ExtractContentAndUsage();
-        var partialCategoryResult = JsonSerializer.Deserialize<PartialCategoryResult>(contentJson!);
-
-        if (partialCategoryResult is null || usage is null)
-            throw new ArgumentNullException(nameof(PartialCategoryResult), "CategoryResult object is null in Deserializer!");
-
-        LinksResult linkResult = new()
-        {
-            Category = new CategoryResult() 
-            { 
-                Title = partialCategoryResult.Category, 
-                Summary = partialCategoryResult.Summary 
-            },
-            CreatedAt = partialCategoryResult.CreatedAt,
-            Usage = usage
-        };
-
-        return linkResult;
-    }
-
-    public static LinksResult RelatedTermResultDeserializer(this string response, LinksResult linksResult)
-    {
-        var (contentJson, usage) = response.ExtractContentAndUsage();
-        var partialTermResult = JsonSerializer.Deserialize<List<PartialRelatedTermResult>>(contentJson!);
+        var partialTermResult = JsonSerializer.Deserialize<TermResultParcial>(contentJson!);
 
         if (partialTermResult is null || usage is null)
-            throw new ArgumentNullException(nameof(List<PartialRelatedTermResult>), "RelatedTermResult object is null in Deserializer!");
+            throw new ArgumentNullException(nameof(PartialTermResult), "TermResult object is null in Deserializer!");
 
-        for (int i = 0; i < linksResult.RelatedTerms.Count; i++)
-        {
-            var selectedTerm = partialTermResult.Where(ptr => ptr.RelatedTerm == linksResult.RelatedTerms[i].TitleId).First();
-            linksResult.RelatedTerms[i].Summary = selectedTerm.RelatedTermSummary;
-        }
-
-        linksResult.Usage.TotalTokens += usage.TotalTokens;
-        linksResult.Usage.PromptTokens += usage.PromptTokens;
-        linksResult.Usage.CompletionTokens += usage.CompletionTokens;
-
-        return linksResult;
+        return (partialTermResult, usage);
     }
 
-    private static void DEBUG(this LinksResult termObj)
+    public static (CategoryResultParcial, Usage) CategoryResultDeserializer(this string response)
     {
-        Console.WriteLine($"Category: {termObj.Category.TitleId}");
-        Console.WriteLine($"Resumo: {termObj.Category.Summary}");
-        Console.WriteLine($"Termo: {termObj.Term.TitleId}");
-        Console.WriteLine($"Resumo: {termObj.Term.Summary}");
-        Console.WriteLine("");
-    
-        foreach (var term in termObj.RelatedTerms)
-        {
-            Console.WriteLine($"Termo: {term.TitleId} ");
-            Console.WriteLine($"Termo: {term.Summary} ");
-            Console.WriteLine("");
-        }
-        Console.WriteLine("");
-        Console.WriteLine($"Prompt Token: {termObj.Usage.PromptTokens}");
-        Console.WriteLine($"Completion Token: {termObj.Usage.CompletionTokens}");
-        Console.WriteLine($"Total Token: {termObj.Usage.TotalTokens}");
+        var (contentJson, usage) = response.ExtractContentAndUsage();
+        var partialCategoryResult = JsonSerializer.Deserialize<CategoryResultParcial>(contentJson!);
+
+        if (partialCategoryResult is null || usage is null)
+            throw new ArgumentNullException(nameof(CategoryResultParcial), "CategoryResult object is null in Deserializer!");
+
+        return (partialCategoryResult, usage);
     }
+
+    public static (IEnumerable<RelatedTermResultParcial>, Usage) RelatedTermResultDeserializer(this string response, LinksResult linksResult)
+    {
+        var (contentJson, usage) = response.ExtractContentAndUsage();
+        var partialTermResult = JsonSerializer.Deserialize<IEnumerable<RelatedTermResultParcial>>(contentJson!);
+
+        if (partialTermResult is null || usage is null)
+            throw new ArgumentNullException(nameof(IEnumerable<RelatedTermResultParcial>), "RelatedTermResult object is null in Deserializer!");
+
+        return (partialTermResult, usage);
+    }
+}
+
+public class TermResultParcial
+{
+    public string? CanonicalDefinition { get; set; }
+    public string? MainFunction { get; set; }
+    public string? ConceptualCategory { get; set; }
+    public IEnumerable<string>? RelatedTerms { get; set; }
+}
+
+public class RelatedTermResultParcial
+{
+    public string Title { get; set; } = string.Empty;
+    public string? CanonicalDefinition { get; set; }
+    public string? MainFunction { get; set; }
+    public string? ConceptualCategory { get; set; }
+}
+
+public class CategoryResultParcial
+{
+    public string? Definition { get; set; }
+    public string? Function { get; set; }
 }

@@ -29,7 +29,7 @@ public class GetOrCreateLinks : IGetOrCreateLinks
         if(categoryResult is null)
             throw new CategoryNotFoundException(); 
 
-        request.CategorySummary = categoryResult.Summary;
+        request.CategorySummary = categoryResult.GetSummary();
 
         var link = new Links();
         var notEmbeddedTermResult = new LinksResult();

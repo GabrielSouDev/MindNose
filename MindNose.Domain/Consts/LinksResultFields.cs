@@ -5,36 +5,37 @@ namespace MindNose.Domain.Consts;
 
 public static class LinksResultFields
 {
-    // LinksResult
     public const string Category = nameof(LinksResult.Category);
     public const string Term = nameof(LinksResult.Term);
-    public const string CategoryToTermWeigth = nameof(LinksResult.CategoryToTermWeigth);
     public const string RelatedTerms = nameof(LinksResult.RelatedTerms);
-    public const string Usage = nameof(LinksResult.Usage);
     public const string WasCreated = nameof(LinksResult.WasCreated);
     public const string CreatedAt = nameof(LinksResult.CreatedAt);
+}
 
-    // CategoryResult (inherits NodeResult)
-    public const string Category_Title = nameof(NodeResult.Title);
-    public const string Category_TitleId = nameof(NodeResult.TitleId);
-    public const string Category_Summary = nameof(NodeResult.Summary);
+public static class NodeFields
+{
+    public const string Title = nameof(NodeResult.Title);
+    public const string TitleId = nameof(NodeResult.TitleId);
+    public const string Embedding = nameof(NodeResult.Embedding);
+    public const string CanonicalDefinition = nameof(TermResult.CanonicalDefinition);
+    public const string MainFunction = nameof(TermResult.MainFunction);
+    public const string ConceptualCategory = nameof(TermResult.ConceptualCategory);
+    public const string Definition = nameof(CategoryResult.Definition);
+    public const string Function = nameof(CategoryResult.Function);
+    public const string CreatedAt = nameof(NodeResult.CreatedAt);
+}
 
-    // TermResult (inherits NodeResult)
-    public const string Term_Title = nameof(NodeResult.Title);
-    public const string Term_TitleId = nameof(NodeResult.TitleId);
-    public const string Term_Summary = nameof(NodeResult.Summary);
-    public const string Term_CreatedAt = nameof(TermResult.CreatedAt);
+public static class RelationshipFields
+{
+    public const string CategoryToTermWeigth = nameof(LinksResult.Term.CategoryToTermWeigth);
+    public const string CategoryToRelatedTermWeigth = nameof(RelatedTermResult.CategoryToRelatedTermWeigth);
+    public const string InitialTermToRelatedTermWeigth = nameof(RelatedTermResult.InitialTermToRelatedTermWeigth);
+}
 
-    // RelatedTermResult (inherits NodeResult)
-    public const string RelatedTerm_Title = nameof(NodeResult.Title);
-    public const string RelatedTerm_TitleId = nameof(NodeResult.TitleId);
-    public const string RelatedTerm_Summary = nameof(NodeResult.Summary);
-    public const string RelatedTerm_CategoryToRelatedTermWeigth = nameof(RelatedTermResult.CategoryToRelatedTermWeigth);
-    public const string RelatedTerm_InitialTermToRelatedTermWeigth = nameof(RelatedTermResult.InitialTermToRelatedTermWeigth);
-    public const string RelatedTerm_CreatedAt = nameof(RelatedTermResult.CreatedAt);
-
+public static class UsageFields
+{
     // Usage
-    public const string Usage_PromptTokens = nameof(UsageClass.PromptTokens);
-    public const string Usage_CompletionTokens = nameof(UsageClass.CompletionTokens);
-    public const string Usage_TotalTokens = nameof(UsageClass.TotalTokens);
+    public const string PromptTokens = nameof(UsageClass.PromptTokens);
+    public const string CompletionTokens = nameof(UsageClass.CompletionTokens);
+    public const string TotalTokens = nameof(UsageClass.TotalTokens);
 }

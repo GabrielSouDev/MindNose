@@ -14,7 +14,7 @@ namespace MindNose.Domain.Nodes
                 var root = doc.RootElement;
 
                 // Lógica para decidir qual tipo concreto instanciar
-                if (root.TryGetProperty("CreatedAt", out _)) // Se a propriedade "CreatedAt" existir, é um CategoryProperties
+                if (root.TryGetProperty("Category", out _)) // Se a propriedade "Category" existir, é um CategoryProperties
                 {
                     return JsonSerializer.Deserialize<CategoryProperties>(root.GetRawText(), options)!;
                 }

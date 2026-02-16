@@ -26,6 +26,11 @@ public static class CypherFactory
             // Categoria
             "MERGE (category:Category { TitleId: initialTerm.Category.TitleId }) " +
             "ON MATCH SET " +
+                "category.Embedding = CASE " +
+                    "WHEN category.Embedding IS NULL OR size(category.Embedding) = 0 " +
+                    "THEN initialTerm.Category.Embedding " +
+                    "ELSE category.Embedding " +
+                "END, " +
                 "category.PromptTokens     = coalesce(category.PromptTokens, 0) + initialTerm.Usage.PromptTokens, " +
                 "category.CompletionTokens = coalesce(category.CompletionTokens, 0) + initialTerm.Usage.CompletionTokens, " +
                 "category.TotalTokens      = coalesce(category.TotalTokens, 0) + initialTerm.Usage.TotalTokens " +
@@ -33,26 +38,32 @@ public static class CypherFactory
             // Termo principal
             "MERGE (term:Term { TitleId: initialTerm.Term.TitleId }) " +
             "ON CREATE SET " +
-                "term.Title            = initialTerm.Term.Title, " +
-                "term.Summary          = initialTerm.Term.Summary, " +
-                "term.CreatedAt        = initialTerm.CreatedAt, " +
-                "term.PromptTokens     = initialTerm.Usage.PromptTokens, " +
-                "term.CompletionTokens = initialTerm.Usage.CompletionTokens, " +
-                "term.TotalTokens      = initialTerm.Usage.TotalTokens " +
+                "term.Title               = initialTerm.Term.Title, " +
+                "term.CanonicalDefinition = initialTerm.Term.CanonicalDefinition, " +
+                "term.MainFunction        = initialTerm.Term.MainFunction, " +
+                "term.ConceptualCategory  = initialTerm.Term.ConceptualCategory, " +
+                "term.Embedding           = initialTerm.Term.Embedding, " +
+                "term.CreatedAt           = initialTerm.CreatedAt, " +
+                "term.PromptTokens        = initialTerm.Usage.PromptTokens, " +
+                "term.CompletionTokens    = initialTerm.Usage.CompletionTokens, " +
+                "term.TotalTokens         = initialTerm.Usage.TotalTokens " +
             "ON MATCH SET " +
                 "term.Title            = coalesce(term.Title, initialTerm.Term.Title), " +
-                "term.Summary          = coalesce(term.Summary, initialTerm.Term.Summary), " +
-                "term.PromptTokens     = coalesce(term.PromptTokens, 0) + initialTerm.Usage.PromptTokens, " +
-                "term.CompletionTokens = coalesce(term.CompletionTokens, 0) + initialTerm.Usage.CompletionTokens, " +
-                "term.TotalTokens      = coalesce(term.TotalTokens, 0) + initialTerm.Usage.TotalTokens " +
+                "term.CanonicalDefinition = coalesce(term.CanonicalDefinition, initialTerm.Term.CanonicalDefinition), " +
+                "term.MainFunction        = coalesce(term.MainFunction, initialTerm.Term.MainFunction), " +
+                "term.ConceptualCategory  = coalesce(term.ConceptualCategory, initialTerm.Term.ConceptualCategory), " +
+                "term.Embedding           = coalesce(term.Embedding, initialTerm.Term.Embedding), " +
+                "term.PromptTokens        = coalesce(term.PromptTokens, 0) + initialTerm.Usage.PromptTokens, " +
+                "term.CompletionTokens    = coalesce(term.CompletionTokens, 0) + initialTerm.Usage.CompletionTokens, " +
+                "term.TotalTokens         = coalesce(term.TotalTokens, 0) + initialTerm.Usage.TotalTokens " +
 
             // Relacionamento categoria -> termo principal
             "MERGE (category)-[relationshipContains:CONTAINS]->(term) " +
             "ON CREATE SET " +
-                "relationshipContains.WeightStartToEnd = initialTerm.CategoryToTermWeigth, " +
+                "relationshipContains.WeightStartToEnd = initialTerm.Term.CategoryToTermWeigth, " +
                 "relationshipContains.CreatedAt        = initialTerm.CreatedAt " +
             "ON MATCH SET " +
-                "relationshipContains.WeightStartToEnd = coalesce(relationshipContains.WeightStartToEnd, initialTerm.CategoryToTermWeigth) " +
+                "relationshipContains.WeightStartToEnd = coalesce(relationshipContains.WeightStartToEnd, initialTerm.Term.CategoryToTermWeigth) " +
 
             // Termos relacionados
             "WITH term, category, relationshipContains, initialTerm " +
@@ -61,9 +72,12 @@ public static class CypherFactory
             // Nó do termo relacionado
             "MERGE (relatedTerm:Term { TitleId: relatedTermParam.TitleId }) " +
             "ON CREATE SET " +
-                "relatedTerm.Title   = relatedTermParam.Title, " +
-                "relatedTerm.Summary   = relatedTermParam.Summary, " +
-                "relatedTerm.CreatedAt = relatedTermParam.CreatedAt " +
+                "relatedTerm.Title               = relatedTermParam.Title, " +
+                "relatedTerm.CanonicalDefinition = relatedTermParam.CanonicalDefinition, " +
+                "relatedTerm.MainFunction        = relatedTermParam.MainFunction, " +
+                "relatedTerm.ConceptualCategory  = relatedTermParam.ConceptualCategory, " +
+                "relatedTerm.Embedding           = relatedTermParam.Embedding, " +
+                "relatedTerm.CreatedAt           = relatedTermParam.CreatedAt " +
 
             // Relacionamento termo principal -> termo relacionado
             "MERGE (term)-[relationshipRelated:RELATED_TO]->(relatedTerm) " +
@@ -83,7 +97,7 @@ public static class CypherFactory
                 "relationshipContainsRelated.WeightStartToEnd = " +
                     "coalesce(relationshipContainsRelated.WeightStartToEnd, relatedTermParam.CategoryToRelatedTermWeigth) " +
             
-           $"RETURN {NodeType.Term}, {NodeType.Category}, {NodeType.RelatedTerm}, " +
+           $"RETURN {NodeName.Term}, {NodeName.Category}, {NodeName.RelatedTerm}, " +
             $"{RelationshipType.RelationshipContains}, {RelationshipType.RelationshipRelated}, {RelationshipType.RelationshipContainsRelated}", 
             new { termResult }
         );
@@ -120,15 +134,19 @@ public static class CypherFactory
 
             "MERGE (category:Category { TitleId: newCategory.Category.TitleId }) " +
             "ON CREATE SET " +
-                "category.Title          = newCategory.Category.Title, " +
-                "category.Summary          = newCategory.Category.Summary, " +
+                "category.Title            = newCategory.Category.Title, " +
+                "category.Definition       = newCategory.Category.Definition, " +
+                "category.Function         = newCategory.Category.Function, " +
+                "category.Embedding        = newCategory.Category.Embedding, " +
                 "category.CreatedAt        = newCategory.CreatedAt, " +
                 "category.PromptTokens     = newCategory.Usage.PromptTokens, " +
                 "category.CompletionTokens = newCategory.Usage.CompletionTokens, " +
                 "category.TotalTokens      = newCategory.Usage.TotalTokens " +
             "ON MATCH SET " +
                 "category.Title            = coalesce(category.Title, newCategory.Category.Title), " +
-                "category.Summary          = coalesce(category.Summary, newCategory.Category.Summary), " +
+                "category.Definition       = coalesce(category.Definition, newCategory.Category.Definition), " +
+                "category.Function         = coalesce(category.Function, newCategory.Category.Function), " +
+                "category.Embedding        = coalesce(category.Embedding, newCategory.Category.Embedding), " +
                 "category.PromptTokens     = coalesce(category.PromptTokens, 0) + newCategory.Usage.PromptTokens, " +
                 "category.CompletionTokens = coalesce(category.CompletionTokens, 0) + newCategory.Usage.CompletionTokens, " +
                 "category.TotalTokens      = coalesce(category.TotalTokens, 0) + newCategory.Usage.TotalTokens "

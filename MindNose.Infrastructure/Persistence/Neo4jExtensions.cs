@@ -15,9 +15,9 @@ public static class Neo4jExtensions
     public static Links MapToLinks(this List<IRecord> results)
     {
         var links = new Links();
-        links.Nodes.AddRange(results.GetNodes(NodeType.Term));
-        links.Nodes.AddRange(results.GetNodes(NodeType.Category));
-        links.Nodes.AddRange(results.GetNodes(NodeType.RelatedTerm));
+        links.Nodes.AddRange(results.GetNodes(NodeName.Term));
+        links.Nodes.AddRange(results.GetNodes(NodeName.Category));
+        links.Nodes.AddRange(results.GetNodes(NodeName.RelatedTerm));
 
         links.Relationships.AddRange(
             results.GetRelationships(RelationshipType.RelationshipContains)
@@ -52,18 +52,18 @@ public static class Neo4jExtensions
         return links;
     }
 
-    private static List<INode> GetNodes(this List<IRecord> recordList, string nodeType)
+    private static List<INode> GetNodes(this List<IRecord> recordList, string nodeName)
     {
         return recordList
-            .Where(record => record.ContainsKey(nodeType))
+            .Where(record => record.ContainsKey(nodeName))
             .Select(record =>
         {
-            var nodeInfo = record[nodeType].As<INodeDriver>();
+            var nodeInfo = record[nodeName].As<INodeDriver>();
             var propertiesInfo = nodeInfo.Properties.ToDictionary(p => p.Key, p => p.Value);
 
-            var properties = nodeInfo.GetNodeProperties(nodeType, propertiesInfo);
+            var properties = nodeInfo.GetNodeProperties(nodeName, propertiesInfo);
 
-            return (INode)(nodeType == NodeType.Category
+            return (INode)(nodeName == NodeName.Category
                 ? new CategoryNode()
                 {
                     ElementId = nodeInfo.ElementId,
@@ -80,13 +80,15 @@ public static class Neo4jExtensions
         }).ToList();
     }
 
-    private static IProperties GetNodeProperties(this INodeDriver node, string nodeType, Dictionary<string, object> propertiesInfo)
+    private static IProperties GetNodeProperties(this INodeDriver node, string nodeName, Dictionary<string, object> propertiesInfo)
     {
-        return nodeType == NodeType.Category
+        return nodeName == NodeName.Category
             ? new CategoryProperties()
             {
                 Title = propertiesInfo.TryGetValue(NodeProperty.Title, out var categoryTitle) ? categoryTitle.ToString()! : "Null",
-                Summary = propertiesInfo.TryGetValue(NodeProperty.Summary, out var categorySummary) ? categorySummary.ToString()! : "Ainda Não Explorado!",
+                Definition = propertiesInfo.TryGetValue(NodeProperty.Definition, out var categoryDefinition) ? categoryDefinition.ToString()! : "Ainda Não Explorado!",
+                Function = propertiesInfo.TryGetValue(NodeProperty.Function, out var categoryFunction) ? categoryFunction.ToString()! : "Ainda Não Explorado!",
+                Embedding = propertiesInfo.TryGetValue(NodeProperty.Embedding, out var categoryEmbedding) ? categoryEmbedding as double[] ?? Array.Empty<double>() : Array.Empty<double>(),
                 PromptTokens = propertiesInfo.TryGetValue(NodeProperty.PromptTokens, out var categoryPromptTokens) ? Convert.ToInt32(categoryPromptTokens) : 0,
                 CompletionTokens = propertiesInfo.TryGetValue(NodeProperty.CompletionTokens, out var categoryCompletionTokens) ? Convert.ToInt32(categoryCompletionTokens) : 0,
                 TotalTokens = propertiesInfo.TryGetValue(NodeProperty.TotalTokens, out var categoryTotalTokens) ? Convert.ToInt32(categoryTotalTokens) : 0,
@@ -95,7 +97,10 @@ public static class Neo4jExtensions
             : new TermProperties()
             {
                 Title = propertiesInfo.TryGetValue(NodeProperty.Title, out var termTitle) ? termTitle.ToString()! : "Null",
-                Summary = propertiesInfo.TryGetValue(NodeProperty.Summary, out var termSummary) ? termSummary.ToString()! : "Ainda Não Explorado!",
+                CanonicalDefinition = propertiesInfo.TryGetValue(NodeProperty.CanonicalDefinition, out var termCanonicalDefinition) ? termCanonicalDefinition.ToString()! : "Ainda Não Explorado!",
+                MainFunction = propertiesInfo.TryGetValue(NodeProperty.MainFunction, out var termMainFunction) ? termMainFunction.ToString()! : "Ainda Não Explorado!",
+                ConceptualCategory = propertiesInfo.TryGetValue(NodeProperty.ConceptualCategory, out var termConceptualCategory) ? termConceptualCategory.ToString()! : "Ainda Não Explorado!",
+                Embedding = propertiesInfo.TryGetValue(NodeProperty.Embedding, out var termEmbedding) ? termEmbedding as double[] ?? Array.Empty<double>() : Array.Empty<double>(),
                 PromptTokens = propertiesInfo.TryGetValue(NodeProperty.PromptTokens, out var termPromptTokens) ? Convert.ToInt32(termPromptTokens) : 0,
                 CompletionTokens = propertiesInfo.TryGetValue(NodeProperty.CompletionTokens, out var termCompletionTokens) ? Convert.ToInt32(termCompletionTokens) : 0,
                 TotalTokens = propertiesInfo.TryGetValue(NodeProperty.TotalTokens, out var termTotalTokens) ? Convert.ToInt32(termTotalTokens) : 0,

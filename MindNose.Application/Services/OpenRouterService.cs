@@ -21,25 +21,70 @@ namespace MindNose.Domain.Services
 
         public async Task<LinksResult> CreateCategoryResult(string category)
         {
-            var prompt = PromptFactory.NewCategoryResult(category);
+            var linksResult = new LinksResult()
+            {
+                Category = new CategoryResult()
+                {
+                    Title = category
+                },
+            };
 
+            var prompt = PromptFactory.NewCategoryResult(category);
             var response = await SubmitPromptAsync(prompt);
 
-            var linksResult = response.CategoryResultDeserializer();
+            var (categoryResultPartial, usage) = response.CategoryResultDeserializer();
+
+            linksResult.Category.Definition = categoryResultPartial.Definition;
+            linksResult.Category.Function = categoryResultPartial.Function;
+            linksResult.Usage = usage;
+
             return linksResult;
         }
 
         public async Task<LinksResult> CreateTermResultAsync(LinksRequest request)
         {
+            var termResult = new LinksResult()
+            {
+                Category = new CategoryResult()
+                {
+                    Title = request.Category
+                },
+                Term = new TermResult()
+                {
+                    Title = request.Term,
+                    CreatedAt = DateTime.UtcNow
+                }
+            };
+
             Prompt prompt = PromptFactory.NewTermResult(request);
-
             var response = await SubmitPromptAsync(prompt, request.LLMModel);
-            var termResult = response.TermResultDeserializer();
+            var (termResultParcial, usage) = response.TermResultDeserializer();
 
-            prompt = PromptFactory.NewRelatedTermSummaries(termResult);
+            termResult.Usage = usage;
+            termResult.Term.CanonicalDefinition = termResultParcial.CanonicalDefinition;
+            termResult.Term.ConceptualCategory = termResultParcial.ConceptualCategory;
+            termResult.Term.MainFunction = termResultParcial.MainFunction;
 
+            if (termResultParcial.RelatedTerms is null) return termResult;
+
+            prompt = PromptFactory.NewRelatedTermSummaries(termResult.Category.Title, termResultParcial.RelatedTerms);
             response = await SubmitPromptAsync(prompt, request.LLMModel);
-            termResult = response.RelatedTermResultDeserializer(termResult);
+
+            var (relatedTermResult, usageRelatedTerms) = response.RelatedTermResultDeserializer(termResult);
+
+            foreach (var relTerm in relatedTermResult)
+            {
+                var term = new RelatedTermResult()
+                {
+                    Title = relTerm.Title,
+                    CanonicalDefinition = relTerm.CanonicalDefinition,
+                    ConceptualCategory = relTerm.ConceptualCategory,
+                    MainFunction = relTerm.MainFunction,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                termResult.RelatedTerms.Add(term);
+            }
 
             return termResult;
         }

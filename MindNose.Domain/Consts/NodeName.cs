@@ -2,7 +2,7 @@
 
 namespace MindNose.Domain.Consts;
 
-public static class NodeType
+public static class NodeName
 {
     public const string Category = "category";
     public const string Term = "term";

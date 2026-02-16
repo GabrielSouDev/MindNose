@@ -1,6 +1,7 @@
 ﻿using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.Results;
+using Tokenizers.HuggingFace.Tokenizer;
 
 namespace MindNose.Domain.Services
 {
@@ -15,34 +16,45 @@ namespace MindNose.Domain.Services
 
         public async Task<LinksResult> MakeEmbeddingAsync(LinksResult termResult)
         {
-            List<string> sentences = new(); 
+            var sentences = new List<string>();
+            int offset = 0;
 
-            sentences.Add($"{termResult.Category.TitleId}: {termResult.Category.Summary}");
-            sentences.Add($"{termResult.Term.TitleId}: {termResult.Term.Summary}");
-            sentences.AddRange(termResult.RelatedTerms.Select(rt => $"{rt.TitleId}: {rt.Summary}").ToList());
+            if (termResult.Category.Embedding is null)
+            {
+                sentences.Add($"{termResult.Category.Title}: \n{termResult.Category.GetSummary()}");
+                offset = 1;
+            }
+
+            sentences.Add($"{termResult.Term.Title}: \n{termResult.Term.GetSummary()}");
+            sentences.AddRange(termResult.RelatedTerms.Select(rt => $"{rt.Title}: \n{rt.GetSummary()}"));
 
             var sentenceEmbeddings = await _embeddingClient.GetSentenceEmbeddingAsync(sentences.ToArray());
 
-            var similarityCategoryToTerm = _embeddingClient.CosineSimilaritySIMD(sentenceEmbeddings[0], sentenceEmbeddings[1]);
-            termResult.CategoryToTermWeigth = similarityCategoryToTerm;
+            if (termResult.Category.Embedding is null)
+                termResult.Category.Embedding = sentenceEmbeddings[0].ToList();
 
-            var relatedTermsEmbeddings = sentenceEmbeddings.Skip(2).ToArray();
+            termResult.Term.Embedding = sentenceEmbeddings[offset].ToList();
 
-            var RelatedTermsList = new List<RelatedTermResult>();
-            for (int candidateIndex = 0; candidateIndex < relatedTermsEmbeddings.Length; candidateIndex++)
+            termResult.Term.CategoryToTermWeigth = _embeddingClient.CosineSimilaritySIMD(
+                termResult.Category.Embedding.ToArray(),
+                termResult.Term.Embedding.ToArray()
+            );
+
+            var relatedTermsEmbeddings = sentenceEmbeddings.Skip(offset + 1).ToArray();
+
+            for (int i = 0; i < relatedTermsEmbeddings.Length; i++)
             {
-                var similarityRelatedTermToCategory =
-                    _embeddingClient.CosineSimilaritySIMD(relatedTermsEmbeddings[candidateIndex], sentenceEmbeddings[0]);
+                termResult.RelatedTerms[i].Embedding = relatedTermsEmbeddings[i].ToList();
 
-                var similarityRelatedTermToTerm = 
-                    _embeddingClient.CosineSimilaritySIMD(relatedTermsEmbeddings[candidateIndex], sentenceEmbeddings[1]);
+                termResult.RelatedTerms[i].CategoryToRelatedTermWeigth =
+                    _embeddingClient.CosineSimilaritySIMD(relatedTermsEmbeddings[i], termResult.Category.Embedding.ToArray());
 
-                termResult.RelatedTerms[candidateIndex].CategoryToRelatedTermWeigth = similarityRelatedTermToCategory;
-                termResult.RelatedTerms[candidateIndex].InitialTermToRelatedTermWeigth = similarityRelatedTermToTerm;
+                termResult.RelatedTerms[i].InitialTermToRelatedTermWeigth =
+                    _embeddingClient.CosineSimilaritySIMD(relatedTermsEmbeddings[i], termResult.Term.Embedding.ToArray());
             }
 
             termResult.RelatedTerms = termResult.RelatedTerms
-                .OrderByDescending(termScorePair => termScorePair.InitialTermToRelatedTermWeigth)
+                .OrderByDescending(rt => rt.InitialTermToRelatedTermWeigth)
                 .ToList();
 
             return termResult;

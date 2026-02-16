@@ -2,6 +2,7 @@
 using MindNose.Application.Services;
 using MindNose.Domain.Interfaces.Clients;
 using MindNose.Domain.Interfaces.Services;
+using MindNose.Domain.Nodes;
 using MindNose.Domain.Request.User;
 using MindNose.Domain.Results;
 using MindNose.Infrastructure.HttpClients;
@@ -38,12 +39,18 @@ public static class AppInitializeExtensions
             var categories = await neo4jClient.GetCategories();
             if (categories != null)
             {
-                var CategoriesResult = categories.Nodes.Select(c =>
-                                new CategoryResult()
-                                {
-                                    Title = c.Properties.Title,
-                                    Summary = c.Properties.Summary
-                                }).ToList();
+                var CategoriesResult = categories.Nodes
+                    .Select(c => c.Properties)
+                    .OfType<CategoryProperties>()
+                    .Select(props => new CategoryResult
+                    {
+                        Title = props.Title,
+                        Definition = props.Definition,
+                        Function = props.Function,
+                        Embedding = props.Embedding,
+                        CreatedAt = props.CreatedAt
+                    })
+                    .ToList();
 
                 categoryService.SetCategories(CategoriesResult);
             }

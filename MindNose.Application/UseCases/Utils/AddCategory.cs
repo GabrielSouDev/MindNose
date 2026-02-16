@@ -1,5 +1,6 @@
 ﻿using MindNose.Domain.Interfaces.Services;
 using MindNose.Domain.Interfaces.UseCases.Utils;
+using MindNose.Domain.Nodes;
 using MindNose.Domain.Operations;
 using MindNose.Domain.Results;
 
@@ -21,12 +22,18 @@ public class AddCategory : IAddCategory
     public async Task<bool> ExecuteAsync(string category)
     {
         var categoryLinks = await _neo4jService.IfCategoryExistsReturnLinksAsync(category);
-        var categoryResult = categoryLinks?.Nodes.Select(c =>
-                                new CategoryResult()
-                                {
-                                    Title = c.Properties.Title,
-                                    Summary = c.Properties.Summary
-                                }).First();
+        var categoryResult = categoryLinks?.Nodes.OfType<CategoryProperties>()
+                                                 .Select(c =>
+                                                 {
+                                                     return new CategoryResult
+                                                     {
+                                                         Title = c.Title,
+                                                         Definition = c.Definition,
+                                                         Function = c.Function,
+                                                         CreatedAt = c.CreatedAt,
+                                                         Embedding = c.Embedding
+                                                     };
+                                                 }).FirstOrDefault();
 
         if (categoryResult is not null && !string.IsNullOrEmpty(categoryResult.TitleId))
             return false;
