@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindNose.Domain", "MindNose
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindNose.Infrastructure", "MindNose.Infrastructure\MindNose.Infrastructure.csproj", "{865CC886-89C1-4330-81D4-A441D3EBC78F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindNose.Apresentation", "MindNose.Apresentation\MindNose.Apresentation.csproj", "{AB53A9FE-5AAE-471E-A1AA-F21F604D710E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindNose.Presentation", "MindNose.Presentation\MindNose.Presentation.csproj", "{AB53A9FE-5AAE-471E-A1AA-F21F604D710E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MindNose.Application", "MindNose.Application\MindNose.Application.csproj", "{8D8BBBF1-38E4-4233-8AD1-9134C0E4D79C}"
 EndProject
