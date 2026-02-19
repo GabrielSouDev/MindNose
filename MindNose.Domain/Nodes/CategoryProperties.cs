@@ -15,8 +15,8 @@
         private string GetSummary()
         {
             var parts = new List<string>();
-            if (!string.IsNullOrWhiteSpace(Definition)) parts.Add($"Definitionn: {Definition}");
-            if (!string.IsNullOrWhiteSpace(Function)) parts.Add($"Function: {Function}");
+            if (!string.IsNullOrWhiteSpace(Definition)) parts.Add($"Definição: {Definition}");
+            if (!string.IsNullOrWhiteSpace(Function)) parts.Add($"Função: {Function}");
             return string.Join("\n", parts);
         }
     }
