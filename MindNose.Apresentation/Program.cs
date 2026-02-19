@@ -21,6 +21,7 @@ builder.AddConfigurations();
 builder.AddEmbeddingClient(isLocalEmbedding, embeddingModel);
 builder.AddClients();
 builder.AddRepositories();
+builder.AddFactories();
 
 builder.AddAuth();
 

@@ -13,8 +13,10 @@ namespace MindNose.Tests.Integration;
 public class OpenRouterIntegration
 {
     public readonly IOptions<OpenRouterSettings> Options;
-    public OpenRouterIntegration()
+    private readonly PromptFactory _promptFactory;
+    public OpenRouterIntegration(PromptFactory promptFactory)
     {
+        _promptFactory = promptFactory;
         var apiProjectPath = Path.Combine(
             Directory.GetCurrentDirectory(),
             "..", "..", "..", "..",
@@ -47,7 +49,7 @@ public class OpenRouterIntegration
             Term = "Javascript"
         };
 
-        var prompt = PromptFactory.NewTermResult(request);
+        var prompt = _promptFactory.Node.NewTermResult(request);
         var response = await httpClient.EnviarPromptAsync(prompt, "mistralai/mistral-small-3.1-24b-instruct");
 
         Assert.NotNull(response);

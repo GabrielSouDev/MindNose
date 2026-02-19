@@ -13,10 +13,12 @@ namespace MindNose.Domain.Services
     public class OpenRouterService : IOpenRouterService
     {
         private readonly IOpenRouterClient _openRouterClient;
+        private readonly PromptFactory _promptFactory;
 
-        public OpenRouterService(IOpenRouterClient openRouterClient)
+        public OpenRouterService(IOpenRouterClient openRouterClient, PromptFactory promptFactory)
         {
             _openRouterClient = openRouterClient;
+            _promptFactory = promptFactory;
         }
 
         public async Task<LinksResult> CreateCategoryResult(string category)
@@ -29,7 +31,7 @@ namespace MindNose.Domain.Services
                 },
             };
 
-            var prompt = PromptFactory.NewCategoryResult(category);
+            var prompt = _promptFactory.Node.NewCategoryResult(category);
             var response = await SubmitPromptAsync(prompt);
 
             var (categoryResultPartial, usage) = response.CategoryResultDeserializer();
@@ -56,7 +58,7 @@ namespace MindNose.Domain.Services
                 }
             };
 
-            Prompt prompt = PromptFactory.NewTermResult(request);
+            Prompt prompt = _promptFactory.Node.NewTermResult(request);
             var response = await SubmitPromptAsync(prompt, request.LLMModel);
             var (termResultParcial, usage) = response.TermResultDeserializer();
 
@@ -67,7 +69,7 @@ namespace MindNose.Domain.Services
 
             if (termResultParcial.RelatedTerms is null) return termResult;
 
-            prompt = PromptFactory.NewRelatedTermSummaries(termResult.Category.Title, termResultParcial.RelatedTerms);
+            prompt = _promptFactory.Node.NewRelatedTermSummaries(termResult.Category.Title, termResultParcial.RelatedTerms);
             response = await SubmitPromptAsync(prompt, request.LLMModel);
 
             var (relatedTermResult, usageRelatedTerms) = response.RelatedTermResultDeserializer(termResult);
@@ -91,7 +93,7 @@ namespace MindNose.Domain.Services
 
         public async Task<string> SendAIChatAsync(ChatRequest request)
         {
-            Prompt prompt = PromptFactory.SendAIChat(request);
+            Prompt prompt = _promptFactory.Chat.SendAIChat(request);
 
             var response = await SubmitPromptAsync(prompt, request.Model);
 
