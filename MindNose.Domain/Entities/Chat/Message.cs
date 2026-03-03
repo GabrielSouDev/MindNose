@@ -1,6 +1,6 @@
 ﻿using MindNose.Domain.Enums;
 
-namespace MindNose.Domain.Entities;
+namespace MindNose.Domain.Entities.Chat;
 
 public class Message : BaseEntity
 {

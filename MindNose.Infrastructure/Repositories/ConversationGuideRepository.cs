@@ -1,4 +1,5 @@
-﻿using MindNose.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using MindNose.Domain.Entities.Chat;
 using MindNose.Infrastructure.Persistence;
 
 public class ConversationGuideRepository
@@ -10,31 +11,45 @@ public class ConversationGuideRepository
         _context = context;
     }
 
-    public ConversationGuide? GetById(int id)
+    public async Task<ConversationGuide?> GetByIdAsync(Guid id)
     {
-        return _context.ConversationGuides.Find(id);
+        return await _context.ConversationGuides.Include(c => c.Messages)
+                                                .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public List<ConversationGuide> GetAll()
+    public async Task<List<ConversationGuideDisplay>?> GetGuideDisplayListByUserId(Guid id)
     {
-        return _context.ConversationGuides.ToList();
+        return await _context.ConversationGuides.Where(c => c.UserProfileId == id)
+                                                .Select(c => new ConversationGuideDisplay() 
+                                                    { 
+                                                        Id = c.Id, 
+                                                        ActualModel = c.ActualModel, 
+                                                        CreatedAt = c.CreatedAt, 
+                                                        LastModified = c.LastModified}
+                                                    )
+                                                .ToListAsync();
     }
 
-    public void Add(ConversationGuide conversationGuide)
+    public async Task<List<ConversationGuide>> GetAllAsync()
     {
-        _context.ConversationGuides.Add(conversationGuide);
-        _context.SaveChanges();
+        return await _context.ConversationGuides.ToListAsync();
     }
 
-    public void Update(ConversationGuide conversationGuide)
+    public async Task AddAsync(ConversationGuide conversationGuide)
+    {
+        await _context.ConversationGuides.AddAsync(conversationGuide);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(ConversationGuide conversationGuide)
     {
         _context.ConversationGuides.Update(conversationGuide);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public void Remove(ConversationGuide conversationGuide)
+    public async Task RemoveAsync(ConversationGuide conversationGuide)
     {
         _context.ConversationGuides.Remove(conversationGuide);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

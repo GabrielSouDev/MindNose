@@ -1,4 +1,4 @@
-﻿using MindNose.Domain.Entities;
+﻿using MindNose.Domain.Entities.User;
 using MindNose.Infrastructure.Persistence;
 
 public class UserProfileRepository

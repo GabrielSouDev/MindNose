@@ -3,7 +3,7 @@ using MindNose.Domain.Nodes;
 
 namespace MindNose.Domain.Extensions;
 
-public static class LinksTransform
+public static class LinksExtensions
 {
     public static CytoscapeDTO LinksToDTO(this Links links)
     {

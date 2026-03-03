@@ -28,7 +28,8 @@ builder.AddAuth();
 builder.AddServices();
 
 builder.AddUtilsUseCase();
-builder.AdMindNoseCoreUseCase();
+builder.AddMindNoseCoreUseCase();
+builder.AddChatUseCase();
 
 builder.Services.AddControllers();
 

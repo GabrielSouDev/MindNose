@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MindNose.Domain.Consts;
-using MindNose.Domain.Entities;
+using MindNose.Domain.Entities.Chat;
+using MindNose.Domain.Entities.User;
 using MindNose.Domain.Request.User;
 
 namespace MindNose.Infrastructure.Persistence;
@@ -54,6 +55,14 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
 
             await userManager.CreateAsync(adminUser, adminRequest.Password);
             await userManager.AddToRoleAsync(adminUser, Role.Admin);
+
+            var adminProfile = new UserProfile()
+            {
+                Id = adminUser.Id
+            };
+
+            await UserProfiles.AddAsync(adminProfile);
+            await SaveChangesAsync();
         }
     }
 

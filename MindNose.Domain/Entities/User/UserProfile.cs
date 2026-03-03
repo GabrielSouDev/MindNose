@@ -1,4 +1,6 @@
-﻿namespace MindNose.Domain.Entities;
+﻿using MindNose.Domain.Entities.Chat;
+
+namespace MindNose.Domain.Entities.User;
 
 public class UserProfile : BaseEntity
 {

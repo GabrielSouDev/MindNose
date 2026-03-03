@@ -91,7 +91,7 @@ namespace MindNose.Domain.Services
             return termResult;
         }
 
-        public async Task<string> SendAIChatAsync(ChatRequest request)
+        public async Task<(string, Results.Usage)> SendAIChatAsync(MessageRequest request)
         {
             Prompt prompt = _promptFactory.Chat.SendAIChat(request);
 
@@ -99,7 +99,7 @@ namespace MindNose.Domain.Services
 
             var (responseString, usage) = response.ExtractContentAndUsage();
 
-            return responseString;
+            return (responseString, usage);
         }
 
         public async Task<string> SubmitPromptAsync(Prompt prompt, string llmModel = "qwen/qwen-turbo")

@@ -9,7 +9,7 @@ namespace MindNose.Domain.Interfaces.Services
     {
         Task<LinksResult> CreateCategoryResult(string category);
         Task<LinksResult> CreateTermResultAsync(LinksRequest request);
-        Task<string> SendAIChatAsync(ChatRequest request);
+        Task<(string, Results.Usage)> SendAIChatAsync(MessageRequest request);
         Task<string> SubmitPromptAsync(Prompt prompt, string llmModel);
     }
 }

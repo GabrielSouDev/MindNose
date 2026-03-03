@@ -7,7 +7,7 @@ namespace MindNose.Domain.Operations;
 
 public class PromptChatFactory
 {
-    private readonly Dictionary<OutputMode, Func<ChatRequest, string>> _strategies;
+    private readonly Dictionary<OutputMode, Func<MessageRequest, string>> _strategies;
     private readonly ConversationGuideRepository _conversationGuideRepository;
 
     public PromptChatFactory(ConversationGuideRepository conversationGuideRepository)
@@ -25,7 +25,7 @@ public class PromptChatFactory
         };
     }
 
-    public Prompt SendAIChat(ChatRequest request)
+    public Prompt SendAIChat(MessageRequest request)
     {
         if (_strategies.TryGetValue(request.OutputMode, out var strategy)) 
         { 
@@ -35,7 +35,7 @@ public class PromptChatFactory
         return new Prompt(AIChatInformal(request));
     }
 
-    private string AIChatInformal(ChatRequest request)
+    private string AIChatInformal(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -57,7 +57,6 @@ public class PromptChatFactory
         sb.AppendLine();
 
         sb.AppendLine("<MENSAGEM>");
-        sb.AppendLine("Mensagem do usuário:");
         sb.AppendLine(request.Message.Text);
         sb.AppendLine("</MENSAGEM>");
         sb.AppendLine();
@@ -74,7 +73,7 @@ public class PromptChatFactory
         return sb.ToString();
     }
 
-    private string AIChatCode(ChatRequest request)
+    private string AIChatCode(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -110,7 +109,7 @@ public class PromptChatFactory
         return sb.ToString();
     }
 
-    private string AIChatCreative(ChatRequest request)
+    private string AIChatCreative(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -131,7 +130,6 @@ public class PromptChatFactory
         sb.AppendLine();
 
         sb.AppendLine("<MENSAGEM>");
-        sb.AppendLine("Mensagem do usuário:");
         sb.AppendLine(request.Message.Text);
         sb.AppendLine("</MENSAGEM>");
         sb.AppendLine();
@@ -148,7 +146,7 @@ public class PromptChatFactory
         return sb.ToString();
     }
 
-    private string AIChatTechnical(ChatRequest request)
+    private string AIChatTechnical(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -170,7 +168,6 @@ public class PromptChatFactory
         sb.AppendLine();
 
         sb.AppendLine("<MENSAGEM>");
-        sb.AppendLine("Mensagem do usuário:");
         sb.AppendLine(request.Message.Text);
         sb.AppendLine("</MENSAGEM>");
         sb.AppendLine();
@@ -187,7 +184,7 @@ public class PromptChatFactory
         return sb.ToString();
     }
 
-    private string AIChatConversational(ChatRequest request)
+    private string AIChatConversational(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -205,10 +202,11 @@ public class PromptChatFactory
         sb.AppendLine("- Respostas objetivas e diretas, evitando longas divagações.");
         sb.AppendLine("- Não inventar informações.");
         sb.AppendLine("- Integrar dados técnicos apenas se relevantes para a conversa.");
+        sb.AppendLine("- Responda em linguagem natural, explicando em texto. Não mostre código a menos que o usuário peça.");
+
         sb.AppendLine();
 
         sb.AppendLine("<MENSAGEM>");
-        sb.AppendLine("Mensagem do usuário:");
         sb.AppendLine(request.Message.Text);
         sb.AppendLine("</MENSAGEM>");
         sb.AppendLine();
@@ -225,7 +223,7 @@ public class PromptChatFactory
         return sb.ToString();
     }
 
-    private string AIChatSummary(ChatRequest request)
+    private string AIChatSummary(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -246,7 +244,6 @@ public class PromptChatFactory
         sb.AppendLine();
 
         sb.AppendLine("<MENSAGEM>");
-        sb.AppendLine("Mensagem do usuário:");
         sb.AppendLine(request.Message.Text);
         sb.AppendLine("</MENSAGEM>");
         sb.AppendLine();
@@ -263,7 +260,7 @@ public class PromptChatFactory
         return sb.ToString();
     }
 
-    private string AIChatArticle(ChatRequest request)
+    private string AIChatArticle(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -295,7 +292,6 @@ public class PromptChatFactory
         sb.AppendLine();
 
         sb.AppendLine("<MENSAGEM>");
-        sb.AppendLine("Mensagem do usuário:");
         sb.AppendLine(request.Message.Text);
         sb.AppendLine("</MENSAGEM>");
         sb.AppendLine();
@@ -312,7 +308,7 @@ public class PromptChatFactory
         return sb.ToString();
     }
 
-    private string AIChatFormal(ChatRequest request)
+    private string AIChatFormal(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -333,7 +329,6 @@ public class PromptChatFactory
         sb.AppendLine();
 
         sb.AppendLine("<MENSAGEM>");
-        sb.AppendLine("Mensagem do usuário:");
         sb.AppendLine(request.Message.Text);
         sb.AppendLine("</MENSAGEM>");
         sb.AppendLine();
@@ -372,7 +367,7 @@ public class PromptChatFactory
     //    return sb.ToString();
     //}
 
-    private string ExtractTechnicalData(ChatRequest request)
+    private string ExtractTechnicalData(MessageRequest request)
     {
         var sb = new StringBuilder();
 
@@ -393,7 +388,7 @@ public class PromptChatFactory
         return sb.ToString();
     }
 
-    private string ExtractContext(ChatRequest request)
+    private string ExtractContext(MessageRequest request)
     {
         var sb = new StringBuilder();
 

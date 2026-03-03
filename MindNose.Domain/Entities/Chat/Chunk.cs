@@ -1,4 +1,4 @@
-﻿namespace MindNose.Domain.Entities;
+﻿namespace MindNose.Domain.Entities.Chat;
 
 public class Chunk : BaseEntity
 {

@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using MindNose.Domain.Configurations;
 using MindNose.Domain.Consts;
 using MindNose.Infrastructure.Persistence;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace MindNose.Apresentation.Extensions;
@@ -12,6 +13,8 @@ public static class AuthExtensions
 {
     public static void AddAuth(this WebApplicationBuilder builder)
     {
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
         // TODO: Ajustar Identity e JWT para subir para PROD.
         builder.Services.AddIdentity<User, IdentityRole<Guid>>(options =>
         {
@@ -53,5 +56,7 @@ public static class AuthExtensions
             options.AddPolicy("UserOrAdmin", policy =>
                 policy.RequireRole(Role.User, Role.Admin));
         });
+
+        builder.Services.AddHttpContextAccessor();
     }
 }

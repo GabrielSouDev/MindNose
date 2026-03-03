@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MindNose.Domain.Configurations;
 using MindNose.Domain.Consts;
+using MindNose.Domain.Entities.User;
 using MindNose.Domain.Request.User;
 using MindNose.Infrastructure.Persistence;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,11 +15,13 @@ namespace MindNose.Application.Services;
 public class UserService
 {
     private readonly UserManager<User> _userManager;
+    private readonly UserProfileRepository _userProfileRepository;
     private readonly IOptionsMonitor<JWTSettings> _jwtSettings;
 
-    public UserService(UserManager<User> userManager, IOptionsMonitor<JWTSettings> jwtSettings)
+    public UserService(UserManager<User> userManager, UserProfileRepository userProfileRepository, IOptionsMonitor<JWTSettings> jwtSettings)
     {
         _userManager = userManager;
+        _userProfileRepository = userProfileRepository;
         _jwtSettings = jwtSettings;
     }
 
@@ -32,6 +35,12 @@ public class UserService
 
         var result = await _userManager.CreateAsync(user, userRequest.Password);
         await _userManager.AddToRoleAsync(user, Role.User);
+
+        var userProfile = new UserProfile()
+        {
+            Id = user.Id
+        };
+        _userProfileRepository.Add(userProfile);
 
         return result;
     }
